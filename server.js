@@ -79,7 +79,7 @@ var questionSetsModel = mongoose.model('question_sets', questionSetSchema);
 	Socket
 **************************/
 io.on('connection', function (socket) {
-	console.log('Device Connected');
+	//console.log('Device Connected');
 	socket.on('disconnect', function() {
 		console.log("Client Disconnected");
 		sessions[socket.gameCode].clientCount--;
@@ -93,6 +93,7 @@ io.on('connection', function (socket) {
 		Setup
 	=======================*/
 	socket.on('display join', function (questionSetsJSON) {
+		console.log('Display Attempting to Join');
 		var questionSets = JSON.parse(questionSetsJSON);
 		//console.log(JSON.stringify(questionSets));
 		//mark socket as display
