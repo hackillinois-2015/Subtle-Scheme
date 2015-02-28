@@ -80,10 +80,11 @@ var session = function () {
 	this.questionSets = [];//question set id'
 	this.players = [];//array of player object
 	this.questionsAsked = [];//question id'
-	this.round = null;//4 rounds
+	this.round = -1;//4 rounds
 	this.question = 0;//3 questions per round except last, which has 1
 	this.phase = 'joining';
 	this.rounds = ROUNDS;
+	this.currentQuestion = null;
 }
 
 var player = function () {
@@ -170,11 +171,33 @@ io.on('connection', function (socket) {
 	**************************/
 	socket.on('everybody in', function() {
 		sessions[socket.gameCode].phase = 'roundIntro';
-		sessions[socket.gameCode].round = 1;
+		sessions[socket.gameCode].round++;
+		updateClientSessions(socket.gameCode);
+	});
+	/*************************
+		PHASE: ROUND INTRO
+	**************************/
+	socket.on('roundIntro end', function() {
+		var session = sessions[socket.gameCode];
+		session.phase = 'lying';
+		session.currentQuestion = getQuestion(session.questionSets, session.questionsAsked);
+		session.questionsAsked[] = session.currentQuestion.questionId;
 		updateClientSessions(socket.gameCode);
 	});
 	/*************************
 		PHASE: LYING
+	**************************/
+	/*************************
+		PHASE: CHOOSING
+	**************************/
+	/*************************
+		PHASE: REVEALING
+	**************************/
+	/*************************
+		PHASE: SCOREBOARD
+	**************************/
+	/*************************
+		PHASE: GAME OVER
 	**************************/
 	/*************************
 		CLEAN UP
@@ -187,6 +210,29 @@ io.on('connection', function (socket) {
 		//if a gamepad leaves, do nothing. let them potentially reconnect
 	});
 });
+
+var getQuestion = function (questionSets, questionsAsked) {
+	//pick a random question set
+	var rand = Math.floor(Math.random()*questionSets.length);
+	//get the question set
+	questionSetsModel.findOne({ _id: questionSets[rand] }, function (error, questionSet) {
+		var isNew = false;
+		console.log()
+		while(!isNew) {
+			//pick a random one from the question set
+			var randa = Math.floor(Math.random()*questionSet.questions.length);
+			//question id is the [question_set objectid]-[index]
+			var randQuestionId = questionSets[rand]+"-"+randa;
+			var question =  questionSet.questions[randa];
+			//verify it is new
+			if(questionsAsked.indexOf(randQuestionId) == -1) isNew = true;
+		}
+		//append questionId
+		question.qustionId = randQuestionId;
+		//return it
+		return question;
+	})
+}
 
 var usernameExists = function (gameCode, username) {
 	for(var i = 0; i < sessions[gameCode].players.length; i++) {
