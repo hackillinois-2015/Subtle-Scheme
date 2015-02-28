@@ -219,7 +219,11 @@ io.on('connection', function (socket) {
 			//set user's choice
 			player.choice = choice;
 			//check if all choices are in
-			if(allChoicesIn(sessions[socket.gameCode])) sessions[socket.gameCode].phase = "revealing";
+			if(allChoicesIn(sessions[socket.gameCode]))
+			{
+				updateScores(sessions[socket.gameCode]);
+				sessions[socket.gameCode].phase = "revealing";
+			}
 			//update
 			updateClientSessions(socket.gameCode);
 		}
@@ -258,6 +262,16 @@ io.on('connection', function (socket) {
 	});
 });
 
+var updateScores = function (session) {
+	var answer = session.currentQuestion.answer;
+	var round = session.rounds[session.round];
+	session.players.forEach(function (player) {
+		//give points for finding truth
+		if(player.choice == answer) player.score += round.truthReward;
+		//give points for successful lies
+	})
+}
+
 var progressSession = function (session) {
 	//increment round / question
 	//set phase
@@ -286,7 +300,7 @@ var getSessionPlayer = function (session, username) {
 	//find user in session
 	var player = null;
 	for(var i = 0; i < session.players.length; i++) {
-		if(session.players[i].username == socket.username) player = session.players[i];
+		if(session.players[i].username == username) player = session.players[i];
 	}
 	return player;
 }
