@@ -32,7 +32,7 @@ app.get('/gamepad', function (request, response) {
 });
 
 app.get('/questionSets', function(request, response) {
-	questionSets.find({}, function (error, documents) {
+	questionSetsModel.find({}, function (error, documents) {
 		response.json(documents);
 	})
 })
@@ -74,7 +74,7 @@ var questionSetSchema = new Schema({
 		}
 	]
 });
-var questionSets = mongoose.model('question_sets', questionSetSchema);
+var questionSetsModel = mongoose.model('question_sets', questionSetSchema);
 /*************************
 	Socket
 **************************/
@@ -92,17 +92,23 @@ io.on('connection', function (socket) {
 	/*======================
 		Setup
 	=======================*/
-	socket.on('display join', function (questionSets) {
+	socket.on('display join', function (questionSetsJSON) {
+		var questionSets = JSON.parse(questionSetsJSON);
+		//console.log(JSON.stringify(questionSets));
 		//mark socket as display
 		socket.role = "display";
 		//generate the code
 		var gameCode = generateGameCode();
 		socket.gameCode = gameCode;
-		//create the session
-		addSession(gameCode, questionSets);
-		//add as a client
-		addClient(socket);
-		console.log('New Display: '+socket.gameCode);
+		//confirm question sets exist
+		if(!validQuestionSets(questionSets)) socket.emit('bad question sets');
+		else {
+			//create the session
+			addSession(gameCode, questionSets);
+			//add as a client
+			addClient(socket);
+			console.log('New Display: '+socket.gameCode);
+		}
 	});
 	/*======================
 		Gameplay: 
@@ -128,7 +134,15 @@ io.on('connection', function (socket) {
 		}
 	});
 });
-
+var validQuestionSets = function (questionSets) {
+	console.log(questionSets.length);
+	for(var i = 0; i < questionSets.length; i++) {
+		questionSetsModel.findOne({ _id: questionSets[i] }, function (err, doc) {
+			if(err) return false;
+		});
+	}
+	return true;
+}
 var addGamePad = function (gameCode, username) {
 	sessions[gameCode].players[username] = playerTemplate;
 	sessions[gameCode].players[username].username = username;
