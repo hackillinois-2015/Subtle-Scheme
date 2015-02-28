@@ -27,9 +27,40 @@ app.get('/display', function (request, response) {
 	response.render('pages/display');
 });
 
-app.get('/client', function (request, response) {
-	response.render('pages/client');
+app.get('/gamepad', function (request, response) {
+	response.render('pages/gamepad');
 });
+/*******************
+	Variables
+********************/
+var sessions = [];
+var sessionTemplate = {
+	gameCode: "",
+	questionPacks: [],//question pack id's
+	players: [],//array of player objects
+	questionsAsked: [],//question id's
+	round: 0
+};
+var playerTemplate = {
+	name: "",
+	score: "",
+};
+/*******************
+	Socket
+********************/
+io.on('connection', function (socket) {
+	console.log('Device Connected');
+	/*******************
+		Display Specific
+	********************/
+	socket.on('displayJoin', function () {
+
+	});
+	/*******************
+		Gamepad Specific
+	********************/
+});
+
 /*******************
 	Execution
 ********************/
