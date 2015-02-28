@@ -50,31 +50,14 @@ var session = function () {
 	this.round = 0;
 	this.phase = 'joiningPhase';
 }
-/*
-var sessionTemplate = {
-	gameCode: "",
-	clientCount: 0,
-	questionSets: [],//question set id's
-	players: [],//array of player objects
-	questionsAsked: [],//question id's
-	round: 0,
-	phase: 'joiningPhase'
-};
-*/
+
 var player = function () {
 	this.username = "";
 	this.score = 0;
 	this.lie = "";
 	this.choice = "";
 }
-/*
-var playerTemplate = {
-	username: "",
-	score: 0,
-	lie: "",
-	choice: ""
-};
-*/
+
 var questionSetTemplate = {
 	name: "",
 	questions: []//array of questions
