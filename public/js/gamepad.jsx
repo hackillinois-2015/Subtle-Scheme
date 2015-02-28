@@ -17,14 +17,22 @@ var Gamepad = React.createClass({
         socket.emit('gamepad join', JSON.stringify(sendTo));
     },
 
+    getSessionUpdate: function (data) {
+        session = JSON.parse(data);
+
+        var state = this.state;
+        state.session = session;
+
+        console.log(session);
+
+        this.setState(state);
+    },
+
     getInitialState: function() {
         socket.on('connect', function (data) {
         });
 
-        socket.on('session update', function (data) {
-            session = JSON.parse(data);
-            console.log(session);
-        });
+        socket.on('session update', this.getSessionUpdate);
 
         socket.on('alert', function (data) {
             console.log('alert', data);
@@ -39,13 +47,16 @@ var Gamepad = React.createClass({
         })
 
         return {
-            status: "join room",
             session: {}
         }
     },
 
+    clickEveryoneIn: function() {
+        socket.emit('everybody in');
+    },
+
     render: function() {
-        // var session = this.state.session;
+        var session = this.state.session;
         // var listSessions = Object.keys(session).map(function(index) {
         //     return (
         //         <div>
@@ -54,8 +65,22 @@ var Gamepad = React.createClass({
         //     );
         // });
 
-        switch(this.state.status) {
-            case "join room":
+        switch(session.phase) {
+            case "joining":
+                return (
+                    <div>
+                        <div className="small-header">You are in!</div>
+                        <button onClick={this.clickEveryoneIn} className="btn">EVERYONE IS IN</button>
+                    </div>
+                );
+            case "roundIntro":
+                var question = session.questionSets[session.question];
+                return (
+                    <div className="questionTime">
+                        <div className="title">{question}</div>
+                    </div>
+                );
+            default:
                 return (
                     <div>
                         <div className="small-header">Join Room</div>

@@ -33,25 +33,38 @@ var Display = React.createClass({
         }
     },
 
+    tickToLying: function() {
+        setTimeout(2000, function() {
+            socket.emit('roundIntro end');
+        });
+    }
+
     render: function() {
         var session = this.state.session;
-        var listPlayers;
-        if(typeof session.players != "undefined") {
-            listPlayers = session.players.map(function(player) {
+
+        switch(session.phase) {
+            case "joining":
+                var playerCount = session.players.length;
                 return (
                     <div>
-                        {player.username}
+                        <div className="small-header">Waiting for players ({playerCount}/8)...</div>
+                        <div className="joinNotice">
+                            <div className="title">
+                                The room code is : <div className="gamecode">{session.gameCode}</div>
+                            </div>
+
+                            <div className="content">
+                                <p>Press <span className="everybody">EVERYBODY IS IN</span> to start the game.</p>
+                                <p>Join on your phone or tablet at http://asdf.com/</p>
+                            </div>
+                        </div>
+                        <DisplayLobby players={session.players}/>
                     </div>
                 );
-            });
-        }
-
-        switch(this.state.session.phase) {
-            case "joining":
+            case "roundIntro":
+                this.tickToLying();
                 return (
-                    <div>
-                        <div className="small-header">Waiting for players</div>
-                        {listPlayers}
+                    <div className="questionTime">
                     </div>
                 );
             default:
@@ -111,20 +124,52 @@ var PickQuestions = React.createClass({
             var room = rooms[index];
             console.log(room);
             return (
-                <div className="form-group">
-                    <input className="checkbox" type="checkbox" name="questionPack" id={"" + room._id} value={"" + room._id} />
-                    <label for={"" + room._id}>{room.name}</label>
+                <div className="col-xs-4 text-center">
+                    <div className="form-group">
+                        <input className="form-control checkbox" type="checkbox" name="questionPack" id={"" + room._id} value={"" + room._id} />
+                        <label htmlFor={"" + room._id}>{room.name}</label>
+                    </div>
                 </div>
             );
         });
 
         return(
             <form onSubmit={this.handleSubmit}>
-                {roomList}
+                <h3 className="title text-center">Select Question Packs</h3>
+                    <div className="row">
+                        {roomList}
+                    </div>
                 <button type="submit" className="btn">
-                    asdf
+                    Create Room
                 </button>
             </form>
+        );
+    }
+});
+
+var DisplayLobby = React.createClass({
+    render: function() {
+        var players = this.props.players;
+        listPlayers = players.map(function(player) {
+            return (
+                <div className="col-xs-4 active">
+                    <div className="playerLobbyItem">{player.username}</div>
+                </div>
+            );
+        });
+
+        for(var i = players.length; i <= 7; i++) {
+            listPlayers.push(
+                <div className="col-xs-4">
+                    <div className="playerLobbyItem">?</div>
+                </div>
+            )
+        }
+
+        return (
+            <div className="row playerLobby">
+                {listPlayers}
+            </div>
         );
     }
 });

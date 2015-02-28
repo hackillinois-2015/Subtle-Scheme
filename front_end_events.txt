@@ -19,6 +19,7 @@
 `````````Display Only````````````
 'display join' = once question sets have been selected, try to create the room
 	-emit: selectedQuestionSets(String[])
+'roundIntro end' = closes round intro and transition to 'lying' phase
 `````````Gamepad Only````````````
 'gamepad join' = once the user inputs name and gamecode, try to join room
 	-emit: (Object)
