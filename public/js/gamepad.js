@@ -6,7 +6,7 @@
 			gameCode: 'AAAA',
 			username: 'Jason'
 		}
-		server.emit('gamepad join', JSON.stringify(dummyData));
+		// server.emit('gamepad join', JSON.stringify(dummyData));
 	});
 
 	server.on('session update', function (data) {

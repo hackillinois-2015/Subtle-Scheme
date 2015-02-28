@@ -4,13 +4,17 @@ var Gamepad = React.createClass({
 
     formHandle: function(e) {
         e.preventDefault();
-        var username = this.refs.username.getDOMNode().value.trim;
-        var gameCode = this.refs.gameCode.getDOMNode().value.trim;
+        var username = this.refs.username.getDOMNode().value.trim();
+        var gameCode = this.refs.gameCode.getDOMNode().value.trim();
 
-        socket.emit('gamepad join', JSON.stringify({
+        var sendTo = {
             username: username,
             gameCode: gameCode
-        }));
+        };
+
+        console.log('sendTo', sendTo);
+
+        socket.emit('gamepad join', JSON.stringify(sendTo));
     },
 
     getInitialState: function() {
@@ -21,6 +25,18 @@ var Gamepad = React.createClass({
             session = JSON.parse(data);
             console.log(session);
         });
+
+        socket.on('alert', function (data) {
+            console.log('alert', data);
+        });
+
+        socket.on('bad game code', function (data) {
+            console.log('badcode', data);
+        })
+
+        socket.on('duplicate username', function (data) {
+            console.log('duplicate username', data);
+        })
 
         return {
             status: "join room",
