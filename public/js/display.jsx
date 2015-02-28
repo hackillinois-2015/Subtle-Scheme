@@ -4,7 +4,6 @@ var Display = React.createClass({
 
     createRoom: function(data) {
         socket.emit('display join', JSON.stringify(data));
-        this.setNewStatus("waiting for players");
     },
 
     getSessionUpdate: function (data) {
@@ -13,13 +12,7 @@ var Display = React.createClass({
         var state = this.state;
         state.session = session;
 
-        this.setState(state);
-    },
-
-    setNewStatus: function(status) {
-
-        var state = this.state;
-        state.status = status;
+        console.log(session);
 
         this.setState(state);
     },
@@ -31,24 +24,37 @@ var Display = React.createClass({
 
         socket.on('session update', this.getSessionUpdate);
 
+        socket.on('bad question sets', function () {
+            console.log('this was called');
+        })
+
         return {
-            session: {},
-            status: "pickrooms"
+            session: {}
         }
     },
 
     render: function() {
         var session = this.state.session;
-        var listSessions = Object.keys(session).map(function(index) {
-            return (
-                <div>
-                    {index}: {session[index]}
-                </div>
-            );
-        });
+        var listPlayers;
+        if(typeof session.players != "undefined") {
+            listPlayers = session.players.map(function(player) {
+                return (
+                    <div>
+                        {player.username}
+                    </div>
+                );
+            });
+        }
 
-        switch(this.state.status) {
-            case "pickrooms":
+        switch(this.state.session.phase) {
+            case "joiningPhase":
+                return (
+                    <div>
+                        <div className="small-header">Waiting for players</div>
+                        {listPlayers}
+                    </div>
+                );
+            default:
                 return (
                     <div>
                         <div className="small-header">Creating Room</div>
@@ -107,7 +113,7 @@ var PickQuestions = React.createClass({
             return (
                 <div className="form-group">
                     <input className="checkbox" type="checkbox" name="questionPack" id={"" + room._id} value={"" + room._id} />
-                    <label for={"" + room._id}></label>
+                    <label for={"" + room._id}>{room.name}</label>
                 </div>
             );
         });

@@ -64,7 +64,7 @@ var Gamepad = React.createClass({
                                 <input type="text" className="form-control" ref="username" placeholder="username" />
                             </div>
                             <div className="form-group">
-                                <input type="text" className="form-control" ref="gameCode" placeholder="gameCode" maxLength="4" size="4" />
+                                <input type="text" className="form-control makeUppercase" ref="gameCode" placeholder="gameCode" maxLength="4" size="4" keyup="javascript:this.value=this.value.toUpperCase();" />
                             </div>
                             <div className="form-group">
                                 <button type="submit" className="btn">Enter</button>
@@ -80,6 +80,10 @@ var Gamepad = React.createClass({
             </div>
         );
     }
+});
+
+$(document).on('keyup', '.makeUppercase', function() {
+    this.value = this.value.toUpperCase();
 });
 
 React.render(<Gamepad />, document.getElementById('gamepad'));
