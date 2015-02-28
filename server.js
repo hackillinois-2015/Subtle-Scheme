@@ -12,6 +12,11 @@ var io = require('socket.io')(server);
 //mongodb
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/subtlePineapple');
+//allow strings to be cast to ObjectIds
+String.prototype.toObjectId = function() {
+  var ObjectId = (require('mongoose').Types.ObjectId);
+  return new ObjectId(this.toString());
+};
 //app
 var pdir = __dirname + '/public';
 app.use(express.static(pdir));
@@ -180,9 +185,7 @@ io.on('connection', function (socket) {
 	socket.on('roundIntro end', function() {
 		var session = sessions[socket.gameCode];
 		session.phase = 'lying';
-		session.currentQuestion = getQuestion(session.questionSets, session.questionsAsked);
-		session.questionsAsked.push(session.currentQuestion.questionId);
-		updateClientSessions(socket.gameCode);
+		setSessionQuestion(session);
 	});
 	/*************************
 		PHASE: LYING
@@ -211,26 +214,32 @@ io.on('connection', function (socket) {
 	});
 });
 
-var getQuestion = function (questionSets, questionsAsked) {
+var setSessionQuestion = function (session) {
+	console.log("questionSets: "+JSON.stringify(session.questionSets));
 	//pick a random question set
-	var rand = Math.floor(Math.random()*questionSets.length);
+	var rand = Math.floor(Math.random()*session.questionSets.length);
 	//get the question set
-	questionSetsModel.findOne({ _id: questionSets[rand] }, function (error, questionSet) {
-		var isNew = false;
-		console.log()
-		while(!isNew) {
-			//pick a random one from the question set
-			var randa = Math.floor(Math.random()*questionSet.questions.length);
-			//question id is the [question_set objectid]-[index]
-			var randQuestionId = questionSets[rand]+"-"+randa;
-			var question =  questionSet.questions[randa];
-			//verify it is new
-			if(questionsAsked.indexOf(randQuestionId) == -1) isNew = true;
+	questionSetsModel.findOne({ _id: session.questionSets[rand].toObjectId() }, function (error, questionSet) {
+		if(error) console.log("error: "+JSON.stringify(error));//error occured
+		else {
+			var isNew = false;
+			console.log()
+			while(!isNew) {
+				//pick a random one from the question set
+				var randa = Math.floor(Math.random()*questionSet.questions.length);
+				//question id is the [question_set objectid]-[index]
+				var randQuestionId = session.questionSets[rand]+"-"+randa;
+				var question = questionSet.questions[randa];
+				//verify it is new
+				if(session.questionsAsked.indexOf(randQuestionId) == -1) isNew = true;
+			}
+			//set current question
+			session.currentQuestion = question;
+			//update questionsAsked
+			session.questionsAsked.push(randQuestionId)
+			//update clients
+			updateClientSessions(session.gameCode);
 		}
-		//append questionId
-		question.qustionId = randQuestionId;
-		//return it
-		return question;
 	})
 }
 
@@ -243,10 +252,11 @@ var usernameExists = function (gameCode, username) {
 	}
 	return false;
 }
+//TODO: THIS DOESN'T WORK PROPERLY!
 var validQuestionSets = function (questionSets) {
-	console.log(questionSets.length);
+	console.log("Valdiating question sets: "+JSON.stringify(questionSets));
 	for(var i = 0; i < questionSets.length; i++) {
-		questionSetsModel.findOne({ _id: questionSets[i] }, function (err, doc) {
+		questionSetsModel.findOne({ _id: questionSets[i].toObjectId() }, function (err, doc) {
 			if(err) return false;
 		});
 	}
@@ -254,11 +264,8 @@ var validQuestionSets = function (questionSets) {
 }
 var addGamePad = function (gameCode, username) {
 	var index = sessions[gameCode].players.length;
-	console.log("adding user: "+index);
 	sessions[gameCode].players[index] = new player();
-	console.log("first user: "+sessions[gameCode].players[0].username);
 	sessions[gameCode].players[index].username = username; 
-	console.log("first user after creation: "+sessions[gameCode].players[0].username);
 }
 
 var closeSession = function (gameCode) {
