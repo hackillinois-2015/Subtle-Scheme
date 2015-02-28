@@ -5,10 +5,14 @@
 '/questionSets' = GET question_sets JSON
 
 --------------Receive from Server--------------
-'bad game code' = invalid gameCode, prompt user for another game code
-'game quit' = the display has quit. set gamepad to original state
 'session update' = update local session with server's latest version
 	-receive: session (object)
+`````````Gamepad Only````````````
+'bad game code' = invalid gameCode, prompt user for another game code
+'game quit' = the display has quit. set gamepad to original state
+`````````Display Only````````````
+'bad question sets' = one more more question sets weren't found
+
 
 --------------Send to Server--------------
 'display join' = once question sets have been selected, try to create the room
