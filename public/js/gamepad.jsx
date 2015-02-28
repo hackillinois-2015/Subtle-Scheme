@@ -61,10 +61,10 @@ var Gamepad = React.createClass({
                         <div className="small-header">Join Room</div>
                         <form onSubmit={this.formHandle}>
                             <div className="form-group">
-                                <input type="text" className="form-control" ref="username" />
+                                <input type="text" className="form-control" ref="username" placeholder="username" />
                             </div>
                             <div className="form-group">
-                                <input type="text" className="form-control" ref="gameCode" />
+                                <input type="text" className="form-control" ref="gameCode" placeholder="gameCode" maxLength="4" size="4" />
                             </div>
                             <div className="form-group">
                                 <button type="submit" className="btn">Enter</button>
