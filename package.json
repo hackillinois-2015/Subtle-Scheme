@@ -1,0 +1,18 @@
+{
+  "name": "subtlePineapple",
+  "description": "Web Party Game",
+  "version": "0.1.0",
+  "private": false,
+  "author": "Jason Lin <j@sonl.in> & Jung Oh & Hyunbin Park",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hackillinois-2015/Subtle-Pineapple.git"
+  },
+  "dependencies": {
+    "express": "~4.11.1",
+    "socket.io": "~1.3.2",
+    "mongodb": "~1.4.29",
+    "ejs": "~2.2.3",
+    "mongoose": "~3.8.23"
+  }
+}
