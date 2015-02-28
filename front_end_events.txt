@@ -20,7 +20,10 @@
 `````````Display Only````````````
 'display join' = once question sets have been selected, try to create the room
 	-emit: selectedQuestionSets(String[])
-'roundIntro end' = closes round intro and transition to 'lying' phase
+'roundIntro end' = closes round intro and transition to lying phase
+'done revealing' = done with the reveal. ask to move onto scoreboard phase
+'done showing scoreboard' = done showing scoreboard. update session to either move to game over or lying phase
+
 `````````Gamepad Only````````````
 'gamepad join' = once the user inputs name and gamecode, try to join room
 	-emit: (Object)
@@ -30,6 +33,8 @@
 	}
 'everybody in' = indicate that the game is ready to begin
 'submit lie' = submit a lie
+	-emit: String
+'submit choice' = submit a choice
 	-emit: String
 --------------Game Phases--------------
 'questionSetPicking' = phase when display picks which questions sets to use

@@ -195,16 +195,13 @@ io.on('connection', function (socket) {
 		Gamepad Specific
 	=======================*/
 	socket.on('submit lie', function(lie) {
-		//find user in session
-		var players = sessions[socket.gameCode].players;
-		var player = null;
-		for(var i = 0; i < players.length; i++) {
-			if(players[i].username == socket.username) player = players[i];
-		}
+		var player = getSessionPlayer(sessions[socket.gameCode], socket.username);
 		if(player == null) socket.emit('invalid player');
 		else {
 			//set user's lie
 			player.lie = lie;
+			//check if all lies are in
+			if(allLiesIn(sessions[socket.gameCode])) sessions[socket.gameCode].phase = "choosing";
 			//update
 			updateClientSessions(socket.gameCode);
 		}
@@ -212,12 +209,40 @@ io.on('connection', function (socket) {
 	/*************************
 		PHASE: CHOOSING
 	**************************/
+	/*======================
+		Gamepad Specific
+	=======================*/
+	socket.on('submit choice', function(choice) {
+		var player = getSessionPlayer(sessions[socket.gameCode], socket.username);
+		if(player == null) socket.emit('invalid player');
+		else {
+			//set user's choice
+			player.choice = choice;
+			//check if all choices are in
+			if(allChoicesIn(sessions[socket.gameCode])) sessions[socket.gameCode].phase = "revealing";
+			//update
+			updateClientSessions(socket.gameCode);
+		}
+	})
 	/*************************
 		PHASE: REVEALING
 	**************************/
+	/*======================
+		Display Specific
+	=======================*/
+	socket.on('done revealing', function() {
+		sessions[socket.gameCode].phase = "scoreboard";
+		updateClientSessions(socket.gameCode);
+	})
 	/*************************
 		PHASE: SCOREBOARD
 	**************************/
+	/*======================
+		Display Specific
+	=======================*/
+	socket.on('done showing scoreboard', function() {
+		progressSession(sessions[socket.gameCode]);
+	})
 	/*************************
 		PHASE: GAME OVER
 	**************************/
@@ -233,6 +258,38 @@ io.on('connection', function (socket) {
 	});
 });
 
+var progressSession = function (session) {
+	//increment round / question
+	//set phase
+	//clear current question
+	//clear player lies and choices
+	//update clients
+}
+
+var allLiesIn = function (session) {
+	for(var i = 0; i < session.players.length; i++) {
+		//return false if any don't have a lie
+		if(session.players[i].lie.length <= 0) return false;
+	}
+	return true;
+}
+
+var allChoicesIn = function (session) {
+	for(var i = 0; i < session.players.length; i++) {
+		//return false if any don't have a choice
+		if(session.players[i].choice.length <= 0) return false;
+	}
+	return true;
+}
+
+var getSessionPlayer = function (session, username) {
+	//find user in session
+	var player = null;
+	for(var i = 0; i < session.players.length; i++) {
+		if(session.players[i].username == socket.username) player = session.players[i];
+	}
+	return player;
+}
 var setSessionQuestion = function (session) {
 	console.log("questionSets: "+JSON.stringify(session.questionSets));
 	//pick a random question set
