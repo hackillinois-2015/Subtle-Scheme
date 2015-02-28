@@ -13,7 +13,7 @@ var Display = React.createClass({
 
     getInitialState: function() {
         socket.on('connect', function (data) {
-            socket.emit('display join');
+            // socket.emit('display join');
         });
 
         socket.on('session update', this.getSessionUpdate);
@@ -39,7 +39,7 @@ var Display = React.createClass({
                 return (
                     <div>
                         <div className="small-header">Creating Room</div>
-                        <PickRooms />
+                        <PickQuestions onQuestionPick={this.createRoom} />
                     </div>
                 );
         }
@@ -52,8 +52,9 @@ var Display = React.createClass({
     }
 });
 
-var PickRooms = React.createClass({
-    getInitialState: function() {
+var PickQuestions = React.createClass({
+    getInitialState: function()
+    {
         $.ajax({
             url: '/questionSets',
             dataType: 'json',
@@ -69,7 +70,22 @@ var PickRooms = React.createClass({
         }
     },
 
-    render: function() {
+    handleSubmit: function(e)
+    {
+        e.preventDefault();
+
+        var selected = [];
+
+        $('form .checkbox:checked').each(function() {
+            selected.push($(this).attr('name'));
+        });
+
+        this.props.onQuestionPick(selected);
+
+    },
+
+    render: function()
+    {
         var rooms = this.state.rooms;
 
         var roomList = Object.keys(rooms).map(function(index) {
@@ -77,16 +93,16 @@ var PickRooms = React.createClass({
             console.log(room);
             return (
                 <div className="form-group">
-                    <input type="checkbox" htmlFor="{room._id}" />
+                    <input className="checkbox" type="checkbox" name="questionPack" id={"" + room._id} value={"" + room._id} />
                     {index}: {rooms[index]}
                 </div>
             );
         });
 
         return(
-            <form>
+            <form onSubmit={this.handleSubmit}>
                 {roomList}
-                <button className="btn">
+                <button type="submit" className="btn">
                     asdf
                 </button>
             </form>
