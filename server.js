@@ -79,7 +79,7 @@ var questionSets = mongoose.model('question_sets', questionSetSchema);
 	Socket
 ********************/
 io.on('connection', function (socket) {
-	//console.log('Device Connected');
+	console.log('Device Connected');
 	socket.on('disconnect', function() {
 		console.log("Client Disconnected");
 		sessions[socket.gameCode].clientCount--;
@@ -127,7 +127,7 @@ var addGamePad = function (gameCode, username) {
 }
 
 var closeSession = function (gameCode) {
-	io.to(gameCode).emit('game quit');
+	io.to(gameCode).emit('display quit');
 	delete sessions[gameCode];
 }
 
@@ -149,10 +149,10 @@ var addClient = function (socket) {
 var generateGameCode = function () {
 	var uniqueCode = false;
 	while(!uniqueCode) {
-		var gameCode = genRandLetter()+genRandLetter()+genRandLetter()+genRandLetter();
-		if(isExistingGameCode(gameCode)) uniqueCode = true;
+		var newGameCode = genRandLetter()+genRandLetter()+genRandLetter()+genRandLetter();
+		if(!isExistingGameCode(newGameCode)) uniqueCode = true;
 	}
-	return gameCode;
+	return newGameCode;
 };
 
 var isExistingGameCode = function(gameCode) {

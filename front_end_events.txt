@@ -6,6 +6,7 @@
 
 --------------Receive from Server--------------
 'bad game code' = invalid gameCode, prompt user for another game code
+'game quit' = the display has quit. set gamepad to original state
 'session update' = update local session with server's latest version
 	-receive: session (object)
 

@@ -2,7 +2,11 @@
 	var server = io.connect('http://localhost');
 	var session = {};//session retrieved from server
 	server.on('connect', function (data) {
-		server.emit('gamepad join');
+		var dummyData = {
+			gameCode: 'AAAA',
+			username: 'Jason'
+		}
+		server.emit('gamepad join', JSON.stringify(dummyData));
 	});
 
 	server.on('session update', function (data) {
