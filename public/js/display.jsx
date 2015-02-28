@@ -4,6 +4,7 @@ var Display = React.createClass({
 
     createRoom: function(data) {
         socket.emit('display join', JSON.stringify(data));
+        // socket.emit('display join', JSON.stringify(['asdf']));
     },
 
     getSessionUpdate: function (data) {
@@ -25,7 +26,7 @@ var Display = React.createClass({
         socket.on('session update', this.getSessionUpdate);
 
         socket.on('bad question sets', function () {
-            console.log('this was called');
+            console.log('BAD was called');
         })
 
         return {
@@ -35,7 +36,6 @@ var Display = React.createClass({
 
     tickToLying: function() {
         setTimeout(function() {
-            alert('okay');
             socket.emit('roundIntro end');
         }, 2000);
     },
@@ -177,7 +177,7 @@ var DisplayLobby = React.createClass({
         }
 
         return (
-            <div className="row playerLobby">
+            <div className="row playerLobby playerColor">
                 {listPlayers}
             </div>
         );

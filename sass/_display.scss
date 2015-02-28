@@ -115,25 +115,81 @@
         font-weight: 600;
     }
 
-    .playerLobby {
+    .playerColor {
         .active {
             &:nth-child(1) .playerLobbyItem {
                 color: #64B5F6;
                 border-color: #64B5F6;
                 background: #BBDEFB;
             }
+
+            &:nth-child(2) .playerLobbyItem {
+                color: #9575CD;
+                border-color: #9575CD;
+                background: #D1C4E9;
+            }
+
+            &:nth-child(3) .playerLobbyItem {
+                color: #81C784;
+                border-color: #81C784;
+                background: #C8E6C9;
+            }
+
+            &:nth-child(4) .playerLobbyItem {
+                color: #A1887F;
+                border-color: #A1887F;
+                background: #D7CCC8;
+            }
+
+            &:nth-child(5) .playerLobbyItem {
+                color: #F06292;
+                border-color: #F06292;
+                background: #F8BBD0;
+            }
+
+            &:nth-child(6) .playerLobbyItem {
+                color: #FFB74D;
+                border-color: #FFB74D;
+                background: #FFE0B2;
+            }
+
+            &:nth-child(7) .playerLobbyItem {
+                color: #90A4AE;
+                border-color: #90A4AE;
+                background: #CFD8DC;
+            }
+
+            &:nth-child(8) .playerLobbyItem {
+                color: #7986CB;
+                border-color: #7986CB;
+                background: #C5CAE9;
+            }
+        }
+
+        .playerLobbyItem {
+            color: #E0E0E0;
+            background: #EEEEEE;
+            border: 1px solid #E0E0E0;
+        }
+    }
+
+    .playerLobby {
+        .active {
+            .playerLobbyItem {
+                height: 40px;
+                padding: 8px 0 6px;
+            }
+
+            font-size: 0.6em;
         }
     }
 
     .playerLobbyItem {
         display: block;
         text-align: center;
-        color: #E0E0E0;
         font-size: 3em;
-        background: #EEEEEE;
-        border: 1px solid #E0E0E0;
         margin: 0 0 15px;
-        padding: 6px 0;
+        height: 40px;
     }
 
     padding: 30px 0 0;
