@@ -34,9 +34,10 @@ var Display = React.createClass({
     },
 
     tickToLying: function() {
-        setTimeout(2000, function() {
+        setTimeout(function() {
+            alert('okay');
             socket.emit('roundIntro end');
-        });
+        }, 2000);
     },
 
     render: function() {
@@ -63,9 +64,10 @@ var Display = React.createClass({
                 );
             case "roundIntro":
                 this.tickToLying();
+                var round = session.rounds[session.round];
                 return (
                     <div className="questionTime">
-                        <h3 className="title">Round {session.round}</h3>
+                        <h3 className="title">{round.name}</h3>
                     </div>
                 );
             case "lying":
