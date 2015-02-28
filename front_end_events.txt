@@ -1,5 +1,20 @@
+------------------- Routing -------------------
+'/' = index
+'/display' = display client
+'/gamepad' = gamepad client
+'/questionSets' = GET question_sets JSON
+
 --------------Receive from Server--------------
-bad game code = ask for another game code
+'bad game code' = invalid gameCode, prompt user for another game code
+'session update' = update local session with server's latest version
+	-receive: session (object)
 
 --------------Send to Server--------------
-gamepad join
+'display join' = immediately after connection, indicate that this client is a display
+	-emit: gameCode (String)
+'gamepad join' = immediately after connection, indicate that this client is a gamepad
+	-emit: (Object)
+	{
+		gameCode: "something",
+		username: "something"
+	}
