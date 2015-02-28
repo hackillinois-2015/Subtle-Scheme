@@ -1,0 +1,7 @@
+Export your current question_sets as a file called 'mongo.json' in the project directory: 
+mongoexport --db subtlePineapple --collection question_sets --out mongo.json
+
+
+Import a file called 'mongo.json' 94 in your project directory as your new question_sets:
+mongoimport --db subtlePineapple --collection question_sets --file mongo.json
+
