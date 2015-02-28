@@ -29,7 +29,7 @@ app.get('/display', function (request, response) {
 
 app.get('/client', function (request, response) {
 	response.render('pages/client');
-})
+});
 /*******************
 	Execution
 ********************/
