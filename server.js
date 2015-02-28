@@ -99,7 +99,7 @@ io.on('connection', function (socket) {
 		addSession(gameCode);
 		//add as a client
 		addClient(socket);
-		//console.log('New Display: '+socket.gameCode);
+		console.log('New Display: '+socket.gameCode);
 		console.log('sessions: '+sessions[0]);
 	});
 	/*******************
