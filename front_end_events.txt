@@ -7,16 +7,17 @@
 --------------Receive from Server--------------
 'session update' = update local session with server's latest version
 	-receive: session (object)
+`````````Display Only````````````
+'bad question sets' = one more more question sets weren't found
 `````````Gamepad Only````````````
 'bad game code' = invalid gameCode, prompt user for another game code
 'game quit' = the display has quit. set gamepad to original state
-`````````Display Only````````````
-'bad question sets' = one more more question sets weren't found
-
 
 --------------Send to Server--------------
+`````````Display Only````````````
 'display join' = once question sets have been selected, try to create the room
 	-emit: selectedQuestionSets(String[])
+`````````Gamepad Only````````````
 'gamepad join' = once the user inputs name and gamecode, try to join room
 	-emit: (Object)
 	{
