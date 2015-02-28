@@ -2,11 +2,24 @@ var socket = io.connect('http://localhost');
 
 var Display = React.createClass({
 
+    createRoom: function(data) {
+        socket.emit('display join', JSON.stringify(data));
+        this.setNewStatus("waiting for players");
+    },
+
     getSessionUpdate: function (data) {
         session = JSON.parse(data);
 
         var state = this.state;
         state.session = session;
+
+        this.setState(state);
+    },
+
+    setNewStatus: function(status) {
+
+        var state = this.state;
+        state.status = status;
 
         this.setState(state);
     },
@@ -94,7 +107,7 @@ var PickQuestions = React.createClass({
             return (
                 <div className="form-group">
                     <input className="checkbox" type="checkbox" name="questionPack" id={"" + room._id} value={"" + room._id} />
-                    {index}: {rooms[index]}
+                    <label for={"" + room._id}></label>
                 </div>
             );
         });
