@@ -25,3 +25,8 @@
 		gameCode: "something",
 		username: "something"
 	}
+
+--------------Game Phases--------------
+'questionSetPickingPhase' = phase when display picks which questions sets to use
+'joiningPhase' = phase when the display shows who has joined and gamepads are entering in room codes and usernames
+	-first one that the server cares about
