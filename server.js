@@ -50,7 +50,7 @@ var sessionTemplate = {
 };
 var playerTemplate = {
 	username: "",
-	score: "",
+	score: 0,
 	lie: "",
 	choice: ""
 };
@@ -86,6 +86,7 @@ io.on('connection', function (socket) {
 		if(isExistingGameCode(socket.gameCode)) sessions[socket.gameCode].clientCount--;
 		//if the display left, kick everyone and delete session
 		if(socket.role == "display") closeSession(socket.gameCode);
+		//if a gamepad leaves, do nothing. let them potentially reconnect
 	});
 	/*************************
 		Display Specific
@@ -124,17 +125,18 @@ io.on('connection', function (socket) {
 	socket.on('gamepad join', function (dataJSON) {
 		socket.emit('alert', "gamepad join received");
 		var data = JSON.parse(dataJSON);
+		socket.gameCode = data.gameCode;
 		//market socket as gamepad
 		socket.role = "gamepad";
 		//check if gameCode is it's a valid gameCode
 		if(!isExistingGameCode(data.gameCode)) socket.emit('bad game code');
 		else if(usernameExists(data.gameCode, data.username)) socket.emit('duplicate username');
 		else {
-			socket.emit('alert', "valid gmaecode and username");
+			socket.emit('alert', "valid gamecode and username");
 			//set data
 			socket.gameCode = data.gameCode;
 			//add player
-			addGamePad(gameCode, data.username);
+			addGamePad(data.gameCode, data.username);
 			//add client
 			addClient(socket);
 			socket.emit('alert', "done");
@@ -144,7 +146,10 @@ io.on('connection', function (socket) {
 
 var usernameExists = function (gameCode, username) {
 	for(var i = 0; i < sessions[gameCode].players.length; i++) {
-		if(sessions[gameCode].players[i].username == username) return true;
+		if(sessions[gameCode].players[i].username == username) {
+			console.log("duplicate username: ("+sessions[gameCode].players[i].username+", "+username+")");
+			return true;
+		}
 	}
 	return false;
 }
@@ -158,8 +163,9 @@ var validQuestionSets = function (questionSets) {
 	return true;
 }
 var addGamePad = function (gameCode, username) {
-	sessions[gameCode].players[username] = playerTemplate;
-	sessions[gameCode].players[username].username = username;
+	var index = sessions[gameCode].players.length;
+	sessions[gameCode].players[index] = playerTemplate;
+	sessions[gameCode].players[index].username = username;
 }
 
 var closeSession = function (gameCode) {
