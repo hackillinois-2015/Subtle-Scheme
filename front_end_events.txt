@@ -14,6 +14,7 @@
 'duplicate username' = username is already taken. prompt for a different username
 'maximum players reached' = already reached max players. can't join
 'game quit' = the display has quit. set gamepad to original state
+'invalid player' = there was an issue finding the player in the session
 
 --------------Send to Server--------------
 `````````Display Only````````````
@@ -28,6 +29,8 @@
 		username: "something"
 	}
 'everybody in' = indicate that the game is ready to begin
+'submit lie' = submit a lie
+	-emit: String
 --------------Game Phases--------------
 'questionSetPicking' = phase when display picks which questions sets to use
 	-select_question_pack.png

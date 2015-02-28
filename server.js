@@ -164,6 +164,7 @@ io.on('connection', function (socket) {
 			socket.emit('alert', "valid gamecode and username");
 			//set data
 			socket.gameCode = data.gameCode;
+			socket.username = data.username;
 			//add player
 			addGamePad(data.gameCode, data.username);
 			//add client
@@ -190,6 +191,24 @@ io.on('connection', function (socket) {
 	/*************************
 		PHASE: LYING
 	**************************/
+	/*======================
+		Gamepad Specific
+	=======================*/
+	socket.on('submit lie', function(lie) {
+		//find user in session
+		var players = sessions[socket.gameCode].players;
+		var player = null;
+		for(var i = 0; i < players.length; i++) {
+			if(players[i].username == socket.username) player = players[i];
+		}
+		if(player == null) socket.emit('invalid player');
+		else {
+			//set user's lie
+			player.lie = lie;
+			//update
+			updateClientSessions(socket.gameCode);
+		}
+	})
 	/*************************
 		PHASE: CHOOSING
 	**************************/
