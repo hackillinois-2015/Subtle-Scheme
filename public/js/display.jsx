@@ -119,7 +119,7 @@ var PickQuestions = React.createClass({
         var selected = [];
 
         $('form .checkbox:checked').each(function() {
-            selected.push($(this).attr('name'));
+            selected.push($(this).attr('id'));
         });
 
         this.props.onQuestionPick(selected);
