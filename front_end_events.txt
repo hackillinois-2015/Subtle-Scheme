@@ -1,0 +1,5 @@
+--------------Receive from Server--------------
+bad game code = ask for another game code
+
+--------------Send to Server--------------
+gamepad join

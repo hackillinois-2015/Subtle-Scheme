@@ -49,8 +49,9 @@ var sessionTemplate = {
 	round: 0
 };
 var playerTemplate = {
-	name: "",
+	username: "",
 	score: "",
+	socket: null,
 };
 var questionSetTemplate = {
 	name: "",
@@ -78,46 +79,70 @@ var questionSets = mongoose.model('question_sets', questionSetSchema);
 	Socket
 ********************/
 io.on('connection', function (socket) {
-	console.log('Device Connected');
+	//console.log('Device Connected');
 	socket.on('disconnect', function() {
 		console.log("Client Disconnected");
-		//remove socket from room
-		socket.leave(socket.gameCode);
 		sessions[socket.gameCode].clientCount--;
-		//check if the room is abandoned
-		if(sessions[socket.gameCode].clientCount == 0) delete sessions[socket.gameCode];
+		//if the display left, kick everyone and delete session
+		if(socket.role == "display") closeSession(socket.gameCode);
 	});
 	/*******************
 		Display Specific
 	********************/
-	socket.on('displayJoin', function () {
+	socket.on('display join', function () {
+		//mark socket as display
+		socket.role = "display";
 		//generate the code
 		var gameCode = generateGameCode();
 		socket.gameCode = gameCode;
 		//create the session
-		sessions[gameCode] = sessionTemplate;
-		sessions[gameCode].gameCode = gameCode;
+		addSession(gameCode);
 		//add as a client
 		addClient(socket);
-		console.log('New Display: '+socket.gameCode);
+		//console.log('New Display: '+socket.gameCode);
+		console.log('sessions: '+sessions[0]);
 	});
 	/*******************
 		Gamepad Specific
 	********************/
-	socket.on('gamepadJoin', function (gameCode) {
+	socket.on('gamepad join', function (data) {
+		//market socket as gamepad
+		socket.role = "gamepad";
 		//check if gameCode is it's a valid gameCode
-			//if not, emit bad game code
-		//set gameCode
-		socket.gameCode = gameCode;
-		//add client
-		addClient(socket);
+		if(!isExistingGameCode(data.gameCode)) socket.emit('bad game code');
+		else {
+			//set data
+			socket.gameCode = data.gameCode;
+			//add player
+			var addGamePad(socket, data.username);
+			//add client
+			addClient(socket);
+		}
 	});
 });
+
+var addGamePad = function (socket, username) {
+	sessions[socket.gameCode].players[username] = playerTemplate;
+	sessions[socket.gameCode].players[username].username = username;
+	//store user in room by themselves
+	socket.join("code-"+socket.gameCode+"-user-"+username);
+}
+
+var closeSession = function (gameCode) {
+	io.to(gameCode).emit('game quit');
+	delete sessions[gameCode];
+}
 
 var updateClientSessions = function (gameCode) {
 	io.to(gameCode).emit('session update', JSON.stringify(sessions[gameCode]));
 }
 
+var addSession = function (gameCode) {
+	sessions[gameCode] = sessionTemplate;
+	sessions[gameCode].gameCode = gameCode;
+	//store display in room by itself
+	socket.join("code-"+socket.gameCode+"-display");
+}
 var addClient = function (socket) {
 	socket.join(socket.gameCode);
 	sessions[socket.gameCode].clientCount++;
@@ -128,10 +153,15 @@ var generateGameCode = function () {
 	var uniqueCode = false;
 	while(!uniqueCode) {
 		var gameCode = genRandLetter()+genRandLetter()+genRandLetter()+genRandLetter();
-		uniqueCode = true;
+		if(isExistingGameCode(gameCode)) uniqueCode = true;
 	}
 	return gameCode;
 };
+
+var isExistingGameCode = function(gameCode) {
+	if(typeof sessions[gameCode] === 'undefined') return false;
+	else return true;
+}
 
 var genRandLetter = function () {
 	var randInt = Math.floor(Math.random()*26);
