@@ -37,7 +37,7 @@ var Display = React.createClass({
         setTimeout(2000, function() {
             socket.emit('roundIntro end');
         });
-    }
+    },
 
     render: function() {
         var session = this.state.session;
@@ -65,6 +65,14 @@ var Display = React.createClass({
                 this.tickToLying();
                 return (
                     <div className="questionTime">
+                        <h3 className="title">Round {session.round}</h3>
+                    </div>
+                );
+            case "lying":
+                return (
+                    <div className="lyingTime">
+                        <h3 className="title">:~)</h3>
+                        <DisplayLobby players={session.players}/>
                     </div>
                 );
             default:
