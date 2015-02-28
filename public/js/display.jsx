@@ -47,7 +47,7 @@ var Display = React.createClass({
         }
 
         switch(this.state.session.phase) {
-            case "joiningPhase":
+            case "joining":
                 return (
                     <div>
                         <div className="small-header">Waiting for players</div>
