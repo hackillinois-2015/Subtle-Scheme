@@ -1,6 +1,6 @@
-/*******************
+/*************************
 	CONFIG
-********************/
+**************************/
 //express
 var express = require('express');
 var app = express();
@@ -16,9 +16,9 @@ mongoose.connect('mongodb://localhost/subtlePineapple');
 var pdir = __dirname + '/public';
 app.use(express.static(pdir));
 var port = 80;
-/*******************
+/*************************
 	PAGE ROUTES
-********************/
+**************************/
 app.get('/', function (request, response) {
 	response.render('pages/index');
 });
@@ -36,9 +36,9 @@ app.get('/questionSets', function(request, response) {
 		response.json(documents);
 	})
 })
-/*******************
+/*************************
 	Variables
-********************/
+**************************/
 var sessions = [];
 var sessionTemplate = {
 	gameCode: "",
@@ -61,9 +61,9 @@ var questionTemplate = {
 	prompt: "",
 	answer: ""
 }
-/*******************
+/*************************
 	SCHEMAS
-********************/
+**************************/
 var Schema = mongoose.Schema;
 var questionSetSchema = new Schema({
 	name: String,
@@ -75,9 +75,9 @@ var questionSetSchema = new Schema({
 	]
 });
 var questionSets = mongoose.model('question_sets', questionSetSchema);
-/*******************
+/*************************
 	Socket
-********************/
+**************************/
 io.on('connection', function (socket) {
 	console.log('Device Connected');
 	socket.on('disconnect', function() {
@@ -86,9 +86,12 @@ io.on('connection', function (socket) {
 		//if the display left, kick everyone and delete session
 		if(socket.role == "display") closeSession(socket.gameCode);
 	});
-	/*******************
+	/*************************
 		Display Specific
-	********************/
+	**************************/
+	/*======================
+		Setup
+	=======================*/
 	socket.on('display join', function () {
 		//mark socket as display
 		socket.role = "display";
@@ -100,11 +103,16 @@ io.on('connection', function (socket) {
 		//add as a client
 		addClient(socket);
 		console.log('New Display: '+socket.gameCode);
-		console.log('sessions: '+sessions[0]);
 	});
-	/*******************
+	/*======================
+		Gameplay: 
+	=======================*/
+	/*************************
 		Gamepad Specific
-	********************/
+	**************************/
+	/*======================
+		Setup
+	=======================*/
 	socket.on('gamepad join', function (data) {
 		//market socket as gamepad
 		socket.role = "gamepad";
@@ -164,8 +172,8 @@ var genRandLetter = function () {
 	var randInt = Math.floor(Math.random()*26);
 	return String.fromCharCode(65+randInt);
 };
-/*******************
+/*************************
 	Execution
-********************/
+**************************/
 server.listen(port);
 console.log('Running on port ' + port);
