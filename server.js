@@ -114,18 +114,16 @@ io.on('connection', function (socket) {
 			//set data
 			socket.gameCode = data.gameCode;
 			//add player
-			var addGamePad(socket, data.username);
+			addGamePad(gameCode, data.username);
 			//add client
 			addClient(socket);
 		}
 	});
 });
 
-var addGamePad = function (socket, username) {
-	sessions[socket.gameCode].players[username] = playerTemplate;
-	sessions[socket.gameCode].players[username].username = username;
-	//store user in room by themselves
-	socket.join("code-"+socket.gameCode+"-user-"+username);
+var addGamePad = function (gameCode, username) {
+	sessions[gameCode].players[username] = playerTemplate;
+	sessions[gameCode].players[username].username = username;
 }
 
 var closeSession = function (gameCode) {
@@ -140,9 +138,8 @@ var updateClientSessions = function (gameCode) {
 var addSession = function (gameCode) {
 	sessions[gameCode] = sessionTemplate;
 	sessions[gameCode].gameCode = gameCode;
-	//store display in room by itself
-	socket.join("code-"+socket.gameCode+"-display");
 }
+
 var addClient = function (socket) {
 	socket.join(socket.gameCode);
 	sessions[socket.gameCode].clientCount++;
