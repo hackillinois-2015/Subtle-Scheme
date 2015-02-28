@@ -16,6 +16,8 @@ mongoose.connect('mongodb://localhost/subtlePineapple');
 var pdir = __dirname + '/public';
 app.use(express.static(pdir));
 var port = 80;
+//game config
+var MAX_PLAYERS = 8;
 /*************************
 	PAGE ROUTES
 **************************/
@@ -47,7 +49,8 @@ var session = function () {
 	this.questionSets = [];//question set id'
 	this.players = [];//array of player object
 	this.questionsAsked = [];//question id'
-	this.round = 0;
+	this.round = 0;//4 rounds
+	this.question = 0;//3 questions per round except last, which has 1
 	this.phase = 'joiningPhase';
 }
 
@@ -134,7 +137,10 @@ io.on('connection', function (socket) {
 		socket.role = "gamepad";
 		//check if gameCode is it's a valid gameCode
 		if(!isExistingGameCode(data.gameCode)) socket.emit('bad game code');
+		//check if username is a duplicate
 		else if(usernameExists(data.gameCode, data.username)) socket.emit('duplicate username');
+		//check if we maxed out on players
+		else if(sessions[data.gameCode].players.length >= 8) socket.emit('maximum players reached');
 		else {
 			socket.emit('alert', "valid gamecode and username");
 			//set data

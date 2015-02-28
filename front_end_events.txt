@@ -12,6 +12,7 @@
 `````````Gamepad Only````````````
 'bad game code' = invalid gameCode, prompt user for another game code
 'duplicate username' = username is already taken. prompt for a different username
+'maximum players reached' = already reached max players. can't join
 'game quit' = the display has quit. set gamepad to original state
 
 --------------Send to Server--------------
