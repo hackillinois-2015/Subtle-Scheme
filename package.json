@@ -6,7 +6,7 @@
   "author": "Jason Lin <j@sonl.in> & Jung Oh & Hyunbin Park",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hackillinois-2015/Subtle-Pineapple.git"
+    "url": "https://github.com/hackillinois-2015/Subtle-Pineapple.git "
   },
   "dependencies": {
     "express": "~4.11.1",
