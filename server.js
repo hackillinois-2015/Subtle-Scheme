@@ -117,11 +117,6 @@ io.on('connection', function (socket) {
 	/*************************
 		SETUP
 	**************************/
-	socket.on('everybody in', function() {
-		sessions[socket.gameCode].phase = 'roundIntro';
-		sessions[socket.gameCode].round = 1;
-		updateClientSessions(socket.gameCode);
-	});
 	/*======================
 		Display Specific
 	=======================*/
@@ -171,9 +166,16 @@ io.on('connection', function (socket) {
 		}
 	});
 	/*************************
-		GAMEPLAY
+		PHASE: JOINING
 	**************************/
-
+	socket.on('everybody in', function() {
+		sessions[socket.gameCode].phase = 'roundIntro';
+		sessions[socket.gameCode].round = 1;
+		updateClientSessions(socket.gameCode);
+	});
+	/*************************
+		PHASE: LYING
+	**************************/
 	/*************************
 		CLEAN UP
 	**************************/
