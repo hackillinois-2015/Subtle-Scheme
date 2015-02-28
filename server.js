@@ -40,20 +40,41 @@ app.get('/questionSets', function(request, response) {
 	Variables
 **************************/
 var sessions = [];
+
+var session = function () {
+	this.gameCode = "";
+	this.clientCount = 0;
+	this.questionSets = [];//question set id'
+	this.players = [];//array of player object
+	this.questionsAsked = [];//question id'
+	this.round = 0;
+	this.phase = 'joiningPhase';
+}
+/*
 var sessionTemplate = {
 	gameCode: "",
 	clientCount: 0,
 	questionSets: [],//question set id's
 	players: [],//array of player objects
 	questionsAsked: [],//question id's
-	round: 0
+	round: 0,
+	phase: 'joiningPhase'
 };
+*/
+var player = function () {
+	this.username = "";
+	this.score = 0;
+	this.lie = "";
+	this.choice = "";
+}
+/*
 var playerTemplate = {
 	username: "",
 	score: 0,
 	lie: "",
 	choice: ""
 };
+*/
 var questionSetTemplate = {
 	name: "",
 	questions: []//array of questions
@@ -164,8 +185,11 @@ var validQuestionSets = function (questionSets) {
 }
 var addGamePad = function (gameCode, username) {
 	var index = sessions[gameCode].players.length;
-	sessions[gameCode].players[index] = playerTemplate;
-	sessions[gameCode].players[index].username = username;
+	console.log("adding user: "+index);
+	sessions[gameCode].players[index] = new player();
+	console.log("first user: "+sessions[gameCode].players[0].username);
+	sessions[gameCode].players[index].username = username; 
+	console.log("first user after creation: "+sessions[gameCode].players[0].username);
 }
 
 var closeSession = function (gameCode) {
@@ -178,7 +202,7 @@ var updateClientSessions = function (gameCode) {
 }
 
 var addSession = function (gameCode, questionSets) {
-	sessions[gameCode] = sessionTemplate;
+	sessions[gameCode] = new session();
 	sessions[gameCode].gameCode = gameCode;
 	sessions[gameCode].questionSets = questionSets;
 }
