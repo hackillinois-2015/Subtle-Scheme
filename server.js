@@ -18,6 +18,7 @@ app.use(express.static(pdir));
 var port = 80;
 //game config
 var MAX_PLAYERS = 8;
+var GAME_NAME = "Subtle Pineapple";
 /*************************
 	PAGE ROUTES
 **************************/
@@ -41,8 +42,42 @@ app.get('/questionSets', function(request, response) {
 /*************************
 	Variables
 **************************/
-var sessions = [];
-
+/*======================
+	Constants
+=======================*/
+var ROUNDS = [
+	{
+		id: 1,
+		name: "Round 1",
+		foolReward: 500,
+		truthReward: 1000,
+		questionCount: 3
+	},
+	{
+		id: 2,
+		name: "Round 2",
+		foolReward: 1000,
+		truthReward: 2000,
+		questionCount: 3
+	},
+	{
+		id: 3,
+		name: "Round 3",
+		foolReward: 1500,
+		truthReward: 3000,
+		questionCount: 3
+	},
+	{
+		id: 4,
+		name: ("Final "+GAME_NAME),
+		foolReward: 2000,
+		truthReward: 4000,
+		questionCount: 1
+	}
+]
+/*======================
+	Classes
+=======================*/
 var session = function () {
 	this.gameCode = "";
 	this.clientCount = 0;
@@ -52,6 +87,7 @@ var session = function () {
 	this.round = 0;//4 rounds
 	this.question = 0;//3 questions per round except last, which has 1
 	this.phase = 'joiningPhase';
+	this.rounds = ROUNDS;
 }
 
 var player = function () {
@@ -60,15 +96,10 @@ var player = function () {
 	this.lie = "";
 	this.choice = "";
 }
-
-var questionSetTemplate = {
-	name: "",
-	questions: []//array of questions
-}
-var questionTemplate = {
-	prompt: "",
-	answer: ""
-}
+/*======================
+	Other
+=======================*/
+var sessions = [];
 /*************************
 	SCHEMAS
 **************************/
@@ -87,19 +118,16 @@ var questionSetsModel = mongoose.model('question_sets', questionSetSchema);
 	Socket
 **************************/
 io.on('connection', function (socket) {
-	//console.log('Device Connected');
-	socket.on('disconnect', function() {
-		console.log("Client Disconnected");
-		if(isExistingGameCode(socket.gameCode)) sessions[socket.gameCode].clientCount--;
-		//if the display left, kick everyone and delete session
-		if(socket.role == "display") closeSession(socket.gameCode);
-		//if a gamepad leaves, do nothing. let them potentially reconnect
-	});
 	/*************************
-		Display Specific
+		SETUP
 	**************************/
+	socket.on('everybody in', function() {
+		sessions[socket.gameCode].phase = 'roundIntro';
+		sessions[socket.gameCode].round = 1;
+		updateClientSessions(socket.gameCode);
+	});
 	/*======================
-		Setup
+		Display Specific
 	=======================*/
 	socket.on('display join', function (questionSetsJSON) {
 		console.log('Display Attempting to Join');
@@ -111,7 +139,7 @@ io.on('connection', function (socket) {
 		var gameCode = generateGameCode();
 		socket.gameCode = gameCode;
 		//confirm question sets exist
-		if(!validQuestionSets(questionSets)) socket.emit('bad question sets');
+		if(questionSets.length > 0 && !validQuestionSets(questionSets)) socket.emit('bad question sets');
 		else {
 			//create the session
 			addSession(gameCode, questionSets);
@@ -121,13 +149,7 @@ io.on('connection', function (socket) {
 		}
 	});
 	/*======================
-		Gameplay: 
-	=======================*/
-	/*************************
 		Gamepad Specific
-	**************************/
-	/*======================
-		Setup
 	=======================*/
 	socket.on('gamepad join', function (dataJSON) {
 		socket.emit('alert', "gamepad join received");
@@ -140,7 +162,7 @@ io.on('connection', function (socket) {
 		//check if username is a duplicate
 		else if(usernameExists(data.gameCode, data.username)) socket.emit('duplicate username');
 		//check if we maxed out on players
-		else if(sessions[data.gameCode].players.length >= 8) socket.emit('maximum players reached');
+		else if(sessions[data.gameCode].players.length >= MAX_PLAYERS) socket.emit('maximum players reached');
 		else {
 			socket.emit('alert', "valid gamecode and username");
 			//set data
@@ -151,6 +173,20 @@ io.on('connection', function (socket) {
 			addClient(socket);
 			socket.emit('alert', "done");
 		}
+	});
+	/*************************
+		GAMEPLAY
+	**************************/
+
+	/*************************
+		CLEAN UP
+	**************************/
+	socket.on('disconnect', function() {
+		console.log("Client Disconnected");
+		if(isExistingGameCode(socket.gameCode)) sessions[socket.gameCode].clientCount--;
+		//if the display left, kick everyone and delete session
+		if(socket.role == "display") closeSession(socket.gameCode);
+		//if a gamepad leaves, do nothing. let them potentially reconnect
 	});
 });
 

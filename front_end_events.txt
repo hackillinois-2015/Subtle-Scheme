@@ -26,7 +26,7 @@
 		gameCode: "something",
 		username: "something"
 	}
-
+'everybody in' = indicate that the game is ready to begin
 --------------Game Phases--------------
 'questionSetPicking' = phase when display picks which questions sets to use
 	-select_question_pack.png
