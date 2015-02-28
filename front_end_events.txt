@@ -27,6 +27,20 @@
 	}
 
 --------------Game Phases--------------
-'questionSetPickingPhase' = phase when display picks which questions sets to use
-'joiningPhase' = phase when the display shows who has joined and gamepads are entering in room codes and usernames
+'questionSetPicking' = phase when display picks which questions sets to use
+	-select_question_pack.png
+'joining' = phase when the display shows who has joined and gamepads are entering in room codes and usernames
 	-first one that the server cares about
+	-lobby.png
+````````````````Main Game Loop```````````````
+'roundIntro' = introducing a new round (3 Rounds of 3 questions and 1 Round of Final Question)
+	-round_splash.png
+'lying' = question is shown and people enter their lies in
+	-round_1_question.png
+'choosing' = choose which one you think is the truth
+	-round_1_choose.png
+'revealing' = reveal who chose what and who got how many points
+	-round_1_answers.png
+'scoreboard' = show current point standings
+`````````````````End Game```````````````````````
+'gameOver' = game is finished. show scoreboard and that's it
