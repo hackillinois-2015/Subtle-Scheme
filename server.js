@@ -47,28 +47,24 @@ app.get('/questionSets', function(request, response) {
 =======================*/
 var ROUNDS = [
 	{
-		id: 1,
 		name: "Round 1",
 		foolReward: 500,
 		truthReward: 1000,
 		questionCount: 3
 	},
 	{
-		id: 2,
 		name: "Round 2",
 		foolReward: 1000,
-		truthReward: 2000,
+		truthReward: 2000,        
 		questionCount: 3
 	},
 	{
-		id: 3,
 		name: "Round 3",
 		foolReward: 1500,
 		truthReward: 3000,
 		questionCount: 3
 	},
 	{
-		id: 4,
 		name: ("Final "+GAME_NAME),
 		foolReward: 2000,
 		truthReward: 4000,
@@ -84,9 +80,9 @@ var session = function () {
 	this.questionSets = [];//question set id'
 	this.players = [];//array of player object
 	this.questionsAsked = [];//question id'
-	this.round = 0;//4 rounds
+	this.round = null;//4 rounds
 	this.question = 0;//3 questions per round except last, which has 1
-	this.phase = 'joiningPhase';
+	this.phase = 'joining';
 	this.rounds = ROUNDS;
 }
 
