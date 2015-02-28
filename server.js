@@ -23,6 +23,13 @@ app.get('/', function (request, response) {
 	response.render('pages/index');
 });
 
+app.get('/display', function (request, response) {
+	response.render('pages/display');
+});
+
+app.get('/client', function (request, response) {
+	response.render('pages/client');
+})
 /*******************
 	Execution
 ********************/
