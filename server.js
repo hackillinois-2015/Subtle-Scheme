@@ -181,7 +181,7 @@ io.on('connection', function (socket) {
 		var session = sessions[socket.gameCode];
 		session.phase = 'lying';
 		session.currentQuestion = getQuestion(session.questionSets, session.questionsAsked);
-		session.questionsAsked[] = session.currentQuestion.questionId;
+		session.questionsAsked.push(session.currentQuestion.questionId);
 		updateClientSessions(socket.gameCode);
 	});
 	/*************************
