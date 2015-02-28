@@ -54,7 +54,7 @@ io.on('connection', function (socket) {
 		Display Specific
 	********************/
 	socket.on('displayJoin', function () {
-
+		console.log('Display Detected');
 	});
 	/*******************
 		Gamepad Specific
