@@ -43,7 +43,7 @@ var sessions = [];
 var sessionTemplate = {
 	gameCode: "",
 	clientCount: 0,
-	questionPacks: [],//question pack id's
+	questionSets: [],//question set id's
 	players: [],//array of player objects
 	questionsAsked: [],//question id's
 	round: 0
