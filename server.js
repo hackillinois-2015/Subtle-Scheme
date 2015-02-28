@@ -120,11 +120,13 @@ io.on('connection', function (socket) {
 	/*======================
 		Setup
 	=======================*/
-	socket.on('gamepad join', function (data) {
+	socket.on('gamepad join', function (dataJSON) {
+		var data = JSON.parse(dataJSON);
 		//market socket as gamepad
 		socket.role = "gamepad";
 		//check if gameCode is it's a valid gameCode
 		if(!isExistingGameCode(data.gameCode)) socket.emit('bad game code');
+		else if(usernameExists(data.gameCode, data.username)) socket.emit('duplicate username');
 		else {
 			//set data
 			socket.gameCode = data.gameCode;
@@ -135,6 +137,13 @@ io.on('connection', function (socket) {
 		}
 	});
 });
+
+var usernameExists = function (gameCode, username) {
+	for(var i = 0; i < sessions[gameCode].players.length; i++) {
+		if(sessions[gameCode].players[i].username == username) return true;
+	}
+	return false;
+}
 var validQuestionSets = function (questionSets) {
 	console.log(questionSets.length);
 	for(var i = 0; i < questionSets.length; i++) {
