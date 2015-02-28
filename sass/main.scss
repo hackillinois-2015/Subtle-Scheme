@@ -1,8 +1,5 @@
 @import "compass/reset";
 
-
-@import {
-    "index",
-    "client",
-    "display"
-}
+@import "index";
+@import "gamepad";
+@import "display";
