@@ -7,7 +7,7 @@ var Gamepad = React.createClass({
         var username = this.refs.username.getDOMNode().value.trim;
         var gameCode = this.refs.gameCode.getDOMNode().value.trim;
 
-        server.emit('gamepad join', JSON.stringify({
+        socket.emit('gamepad join', JSON.stringify({
             username: username,
             gameCode: gameCode
         }));
