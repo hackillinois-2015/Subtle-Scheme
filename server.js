@@ -136,7 +136,7 @@ io.on('connection', function (socket) {
 		var gameCode = generateGameCode();
 		socket.gameCode = gameCode;
 		//confirm question sets exist
-		if(questionSets.length <= 0 && !validQuestionSets(questionSets)) socket.emit('bad question sets');
+		if(questionSets.length <= 0 || !validQuestionSets(questionSets)) socket.emit('bad question sets');
 		else {
 			//create the session
 			addSession(gameCode, questionSets);
