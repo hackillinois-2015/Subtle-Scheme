@@ -13,4 +13,14 @@
 		session = JSON.parse(data);
 		console.log(session);
 	});
+	/*************************
+		Setup Events
+	**************************/
+	server.on('bad game code', function () {
+		//todo
+	})
+
+	server.on('duplicate username', function () {
+		//todo
+	})
 }());
