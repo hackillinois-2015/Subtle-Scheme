@@ -51,7 +51,8 @@ var sessionTemplate = {
 var playerTemplate = {
 	username: "",
 	score: "",
-	socket: null,
+	lie: "",
+	choice: ""
 };
 var questionSetTemplate = {
 	name: "",
@@ -82,7 +83,7 @@ io.on('connection', function (socket) {
 	//console.log('Device Connected');
 	socket.on('disconnect', function() {
 		console.log("Client Disconnected");
-		sessions[socket.gameCode].clientCount--;
+		if(isExistingGameCode(socket.gameCode)) sessions[socket.gameCode].clientCount--;
 		//if the display left, kick everyone and delete session
 		if(socket.role == "display") closeSession(socket.gameCode);
 	});
@@ -121,6 +122,7 @@ io.on('connection', function (socket) {
 		Setup
 	=======================*/
 	socket.on('gamepad join', function (dataJSON) {
+		socket.emit('alert', "gamepad join received");
 		var data = JSON.parse(dataJSON);
 		//market socket as gamepad
 		socket.role = "gamepad";
@@ -128,12 +130,14 @@ io.on('connection', function (socket) {
 		if(!isExistingGameCode(data.gameCode)) socket.emit('bad game code');
 		else if(usernameExists(data.gameCode, data.username)) socket.emit('duplicate username');
 		else {
+			socket.emit('alert', "valid gmaecode and username");
 			//set data
 			socket.gameCode = data.gameCode;
 			//add player
 			addGamePad(gameCode, data.username);
 			//add client
 			addClient(socket);
+			socket.emit('alert', "done");
 		}
 	});
 });
