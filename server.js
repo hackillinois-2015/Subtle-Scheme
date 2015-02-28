@@ -92,14 +92,14 @@ io.on('connection', function (socket) {
 	/*======================
 		Setup
 	=======================*/
-	socket.on('display join', function () {
+	socket.on('display join', function (questionSets) {
 		//mark socket as display
 		socket.role = "display";
 		//generate the code
 		var gameCode = generateGameCode();
 		socket.gameCode = gameCode;
 		//create the session
-		addSession(gameCode);
+		addSession(gameCode, questionSets);
 		//add as a client
 		addClient(socket);
 		console.log('New Display: '+socket.gameCode);
@@ -143,9 +143,10 @@ var updateClientSessions = function (gameCode) {
 	io.to(gameCode).emit('session update', JSON.stringify(sessions[gameCode]));
 }
 
-var addSession = function (gameCode) {
+var addSession = function (gameCode, questionSets) {
 	sessions[gameCode] = sessionTemplate;
 	sessions[gameCode].gameCode = gameCode;
+	sessions[gameCode].questionSets = questionSets;
 }
 
 var addClient = function (socket) {

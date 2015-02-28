@@ -11,9 +11,9 @@
 	-receive: session (object)
 
 --------------Send to Server--------------
-'display join' = immediately after connection, indicate that this client is a display
-	-emit: gameCode (String)
-'gamepad join' = immediately after connection, indicate that this client is a gamepad
+'display join' = once question sets have been selected, try to create the room
+	-emit: selectedQuestionSets(String[])
+'gamepad join' = once the user inputs name and gamecode, try to join room
 	-emit: (Object)
 	{
 		gameCode: "something",
