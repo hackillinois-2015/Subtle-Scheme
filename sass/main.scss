@@ -1,5 +1,10 @@
 @import "compass/reset";
 
+html {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 12px;
+}
+
 @import "index";
 @import "gamepad";
 @import "display";
