@@ -85,7 +85,7 @@ var session = function () {
 	this.questionSets = [];//question set id'
 	this.players = [];//array of player object
 	this.questionsAsked = [];//question id'
-	this.round = -1;//4 rounds
+	this.round = 0;//4 rounds
 	this.question = 0;//3 questions per round except last, which has 1
 	this.phase = 'joining';
 	this.rounds = ROUNDS;
@@ -177,7 +177,6 @@ io.on('connection', function (socket) {
 	**************************/
 	socket.on('everybody in', function() {
 		sessions[socket.gameCode].phase = 'roundIntro';
-		sessions[socket.gameCode].round++;
 		updateClientSessions(socket.gameCode);
 	});
 	/*************************
@@ -295,11 +294,33 @@ var updateScores = function (session) {
 }
 
 var progressSession = function (session) {
+	var round = session.rounds[session.round];
+	//one way flags
+	var gameOver = false;
+	var newRound = false;
+
 	//increment round / question
+	if(session.question < round.questionCount) question++;
+	else if(session.round < session.rounds.length-1){
+		round++;
+		question = 0;
+		newRound = true;
+	} else {//finished final round
+		gameOver = true;
+	}
 	//set phase
+	if(gameOver) session.phase = "gameOver";
+	else if(newRound) session.phase = "roundIntro";
+	else session.phase = "lying";
 	//clear current question
+	session.currentQuestion = null;
 	//clear player lies and choices
+	session.players.forEach(function (player) {
+		player.lie = "";
+		player.choice = "";
+	})
 	//update clients
+	updateClientSessions(session.gameCode);
 }
 /*
 var allLiesIn = function (session) {
