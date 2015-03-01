@@ -156,10 +156,17 @@ io.on('connection', function (socket) {
 		socket.role = "gamepad";
 		//check if gameCode is it's a valid gameCode
 		if(!isExistingGameCode(data.gameCode)) socket.emit('bad game code');
-		//check if username is a duplicate
-		else if(usernameExists(data.gameCode, data.username)) socket.emit('duplicate username');
 		//check if we maxed out on players
 		else if(sessions[data.gameCode].players.length >= MAX_PLAYERS) socket.emit('maximum players reached');
+		//check if username is already in
+		else if(usernameExists(data.gameCode, data.username)) {
+			socket.emit('existing username');
+			//set data
+			socket.gameCode = data.gameCode;
+			socket.username = data.username;
+			//add client
+			addClient(socket);
+		}
 		else {
 			socket.emit('alert', "valid gamecode and username");
 			//set data
@@ -169,7 +176,6 @@ io.on('connection', function (socket) {
 			addGamePad(data.gameCode, data.username);
 			//add client
 			addClient(socket);
-			socket.emit('alert', "done");
 		}
 	});
 	/*************************

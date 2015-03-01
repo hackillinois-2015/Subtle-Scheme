@@ -11,7 +11,7 @@
 'bad question sets' = one more more question sets weren't found
 `````````Gamepad Only````````````
 'bad game code' = invalid gameCode, prompt user for another game code
-'duplicate username' = username is already taken. prompt for a different username
+'existing username' = username is already registered. Still allow control
 'maximum players reached' = already reached max players. can't join
 'game quit' = the display has quit. set gamepad to original state
 'invalid player' = there was an issue finding the player in the session
