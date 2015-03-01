@@ -197,14 +197,14 @@ io.on('connection', function (socket) {
 		var player = getSessionPlayer(sessions[socket.gameCode], socket.username);
 		if(player == null) socket.emit('invalid player');
 		else {
-			//set user's lie
-			player.lie = lie;
-			/*
-			//check if all lies are in
-			if(allLiesIn(sessions[socket.gameCode])) sessions[socket.gameCode].phase = "choosing";
-			*/
-			//update
-			updateClientSessions(socket.gameCode);
+			//ensure lie is unique
+			if(!lieIsUnique(session, lie)) socket.emit('duplicate lie');
+			else {
+				//set user's lie
+				player.lie = lie;
+				//update
+				updateClientSessions(socket.gameCode);
+			}
 		}
 	})
 	/*======================
@@ -279,6 +279,10 @@ io.on('connection', function (socket) {
 		//if a gamepad leaves, do nothing. let them potentially reconnect
 	});
 });
+
+var lieIsUnique = function (session, lie) {
+	return true;
+}
 
 var updateScores = function (session) {
 	var answer = session.currentQuestion.answer;
@@ -384,7 +388,7 @@ var usernameExists = function (gameCode, username) {
 	}
 	return false;
 }
-//TODO: THIS DOESN'T WORK PROPERLY!
+
 var validQuestionSets = function (questionSets) {
 	//console.log("Valdiating question sets: "+JSON.stringify(questionSets));
 	for(var i = 0; i < questionSets.length; i++) {
