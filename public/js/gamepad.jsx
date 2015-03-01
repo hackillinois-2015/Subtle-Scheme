@@ -230,19 +230,21 @@ var ChoosingForm = React.createClass({
         var choices = [];
         var currentQuestion = this.props.currentQuestion;
 
-        this.props.players.map(function(player) {
-            if(player.username != whoami) {
-                choices.push(
-                    <ChoosingButton onButtonChosen={this.removeForm} answer={player.lie} />
-                );
-            }
-        }.bind(this))
+        if(typeof this.choices == "undefined") {
+            this.props.players.map(function(player) {
+                if(player.username != whoami) {
+                    choices.push(
+                        <ChoosingButton onButtonChosen={this.removeForm} answer={player.lie} />
+                    );
+                }
+            }.bind(this))
 
-        choices.push(
-            <ChoosingButton onButtonChosen={this.removeForm} answer={currentQuestion.answer} />
-        );
+            choices.push(
+                <ChoosingButton onButtonChosen={this.removeForm} answer={currentQuestion.answer} />
+            );
+        }
 
-        choices = shuffle(choices);
+        this.choices = shuffle(choices);
 
         return (
             <div className="choiceList">
