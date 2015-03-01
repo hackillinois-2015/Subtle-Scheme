@@ -1,4 +1,5 @@
 var disabledSound = false;
+var currentSong = "lobby";
 
 function playSound(file) {
     if(disabledSound) {
@@ -39,14 +40,12 @@ function playBackground() {
 }
 
 function stopBackground() {
-    if(disabledSound) {
+    if(disabledSound || backgroundAudio.paused) {
         return;
     }
 
-    try {
-        backgroundAudio.pause();
-        backgroundAudio.currentTime = 0;
-    } catch(err) {}
+    backgroundAudio.pause();
+    backgroundAudio.currentTime = 0;
 }
 
 function playSimpleNoise(file) {
@@ -82,14 +81,12 @@ function playLobby() {
 }
 
 function stopLobby() {
-    if(disabledSound) {
+    if(disabledSound || lobbyAudio.paused) {
         return;
     }
 
-    try {
-        lobbyAudio.pause();
-        lobbyAudio.currentTime = 0;
-    } catch(err) {}
+    lobbyAudio.pause();
+    lobbyAudio.currentTime = 0;
 }
 
 $('.toggleSound').on('click', 'span', function() {
@@ -98,19 +95,26 @@ $('.toggleSound').on('click', 'span', function() {
         $this.removeClass('glyphicon-volume-up').addClass('glyphicon-volume-off');
         disabledSound = true;
 
-        try {
+        if(!backgroundAudio.paused) {
             backgroundAudio.pause();
             backgroundAudio.currentTime = 0;
-        } catch(err) {}
+        }
 
-        try {
+        if(!lobbyAudio.paused) {
             lobbyAudio.pause();
             lobbyAudio.currentTime = 0;
-        } catch(err) {}
+        }
 
     } else {
         $this.removeClass('glyphicon-volume-off').addClass('glyphicon-volume-up');
         disabledSound = false;
+
+        if(currentSong == "lobby") {
+            lobbyAudio.play();
+        } else if(currentSong == "background") {
+            backgroundAudio.play();
+        }
+
     }
 });
 
@@ -184,7 +188,9 @@ var Display = React.createClass({
                     </div>
                 );
             case "roundIntro":
-                stopLobby();
+                if(!lobbyAudio.paused) {
+                    stopLobby();
+                }
                 this.tickToLying();
                 var round = session.rounds[session.round];
                 return (
@@ -204,7 +210,10 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
 
                 if(!this.lying) {
-                    playBackground();
+                    if(backgroundAudio.paused) {
+                        playBackground();
+                        currentSong = "background";
+                    }
                     if(session.currentQuestion.audioLocation != null) {
                         playSound(session.currentQuestion.audioLocation);
                     }
@@ -258,7 +267,6 @@ var Display = React.createClass({
 
             case "revealing":
                 this.choosing = false;
-                stopBackground();
                 var round = session.rounds[session.round];
                 return (
                     <div>
@@ -281,6 +289,13 @@ var Display = React.createClass({
                     </div>
                 );
             case "gameOver":
+                if(!backgroundAudio.paused) {
+                    stopBackground();
+                }
+                if(lobbyAudio.paused) {
+                    playLobby();
+                    currentSong = "lobby";
+                }
                 var gameOver = true;
                 var play = [];
                 if(session.canPlayAgain) {
@@ -301,7 +316,10 @@ var Display = React.createClass({
                     </div>
                 );
             default:
-                playLobby();
+                if(lobbyAudio.paused) {
+                    playLobby();
+                    currentSong = "lobby";
+                }
                 return (
                     <div>
                         <div className="small-header">Creating Room</div>
