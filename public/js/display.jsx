@@ -1,3 +1,48 @@
+function playSound(file) {
+    var audio = new Audio(file);
+
+    audio.autoplay = true;
+    $.get();
+
+    audio.addEventListener("load", function() {
+        audio.Play();
+    }, true);
+}
+
+var backgroundAudio;
+function playBackground() {
+    var backgroundAudio = new Audio("/assets/audio/other/answerselection_buildup.mp3");
+    backgroundAudio.autoplay = true;
+    backgroundAudio.volume = 0.6;
+    $.get();
+
+    backgroundAudio.addEventListener("load", function() {
+        backgroundAudio.play();
+    }, true);
+
+    backgroundAudio.addEventListener("ended", function() {
+        backgroundAudio.src = "/assets/audio/other/answerselection_loop.mp3";
+        backgroundAudio.loop = true;
+        backgroundAudio.volume = 0.3;
+        backgroundAudio.play();
+    });
+}
+
+function stopBackground() {
+    backgroundAudio.stop();
+}
+
+function playSimpleNoise(file) {
+    var anb = new Audio('/assets/audio/other/'+file);
+    anb.autoplay = true;
+    anb.volume = 0.3;
+    $.get();
+
+    anb.addEventListener("load", function() {
+        anb.play();
+    }, true);
+}
+
 var Display = React.createClass({
 
     createRoom: function(data) {
@@ -17,6 +62,10 @@ var Display = React.createClass({
     },
 
     getInitialState: function() {
+        this.choosing = false;
+        this.lying = false;
+        this.lyingSimple = false;
+
         socket.on('connect', function (data) {
             // socket.emit('display join');
         });
@@ -65,16 +114,33 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div className="questionTime">
-                        <h3 className="title">{round.name}</h3>
+                        <h3 className="title text-center">{round.name}</h3>
+                        <div className="text-center to-fool">{round.foolReward} for everyone you fool</div>
+                        <div className="text-center for-truth">{round.truthReward} for finding the truth</div>
                     </div>
                 );
             case "lying":
+
                 var progressBarWidth = {
                     width: '60%'
                 }
+
                 var round = session.rounds[session.round];
 
-                console.log(session, session.currentQuestion);
+                if(!this.lying) {
+                    playBackground();
+                    if(session.currentQuestion.audioLocation != null) {
+                        playSound(session.currentQuestion.audioLocation);
+                    }
+
+                    this.lying = true;
+                }
+
+                if(this.lyingSimple) {
+                    playSimpleNoise('inputreceived.mp3');
+                } else {
+                    this.lyingSimple = true;
+                }
 
                 return (
                     <div>
@@ -93,6 +159,14 @@ var Display = React.createClass({
                         </div>
                 */
             case "choosing":
+                this.lyingSimple = false;
+                this.lying = false;
+                if(this.choosing) {
+                    playSimpleNoise('inputreceived.mp3');
+                } else {
+                    this.choosing = true;
+                }
+
                 var round = session.rounds[session.round];
                 return (
                     <div>
@@ -105,6 +179,8 @@ var Display = React.createClass({
                 );
 
             case "revealing":
+                this.choosing = false;
+                stopBackground();
                 var round = session.rounds[session.round];
                 return (
                     <div>

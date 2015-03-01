@@ -88,6 +88,7 @@ var Gamepad = React.createClass({
                 );
             case "lying":
                 var question = session.currentQuestion;
+
                 return (
                     <div className="questionTime">
                         <div className="title">{question.prompt}</div>
