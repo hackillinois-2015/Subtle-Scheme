@@ -162,6 +162,8 @@ var Display = React.createClass({
     render: function() {
         var session = this.state.session;
 
+        console.log(session);
+
         switch(session.phase) {
             case "joining":
                 var playerCount = session.players.length;
@@ -187,7 +189,8 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div className="questionTime">
-                        <h3 className="title text-center">{round.name} ({session.gameCode})</h3>
+                        <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
+                        <h3 className="title text-center">{round.name}</h3>
                         <div className="text-center to-fool">{round.foolReward} for everyone you fool</div>
                         <div className="text-center for-truth">{round.truthReward} for finding the truth</div>
                     </div>
@@ -217,7 +220,8 @@ var Display = React.createClass({
 
                 return (
                     <div>
-                        <div className="small-header">{round.name} ({session.gameCode})</div>
+                        <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
+                        <div className="small-header">{round.name}</div>
                         <div className="lyingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
                             <WaitingPlayerLies players={session.players} />
@@ -243,7 +247,8 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div>
-                        <div className="small-header">{round.name} ({session.gameCode})</div>
+                        <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
+                        <div className="small-header">{round.name}</div>
                         <div className="choosingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
                             <WaitingPlayerChoosing players={session.players} currentQuestion={session.currentQuestion} />
@@ -257,7 +262,8 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div>
-                        <div className="small-header">{round.name} ({session.gameCode})</div>
+                        <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
+                        <div className="small-header">{round.name}</div>
                         <div className="revealingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
                             <StartRevealing data={session} />
@@ -267,7 +273,8 @@ var Display = React.createClass({
             case "scoreboard":
                 return (
                     <div>
-                        <div className="small-header">Scoreboard ({session.gameCode})</div>
+                        <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
+                        <div className="small-header">Scoreboard</div>
                         <div className="scoreBoard">
                             <DisplayScores players={session.players} />
                         </div>
@@ -275,15 +282,21 @@ var Display = React.createClass({
                 );
             case "gameOver":
                 var gameOver = true;
+                var play = [];
+                if(session.canPlayAgain) {
+                    play.push(<small><a href="#" onClick={this.playAgain}>Play Again?</a></small>);
+                }
+
                 return (
                     <div>
-                        <div className="small-header">Scoreboard ({session.gameCode})</div>
+                        <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
+                        <div className="small-header">Scoreboard</div>
                         <div className="scoreBoard">
                             <DisplayScores gameOver={gameOver} players={session.players} />
                         </div>
                         <h3 className="title text-center">
                             Game Over!<br />
-                            <small><a href="#" onClick={this.playAgain} >Play Again?</a></small>
+                            {play}
                         </h3>
                     </div>
                 );
@@ -597,6 +610,13 @@ var StartRevealing = React.createClass({
             }, 3000)
 
             if(rightPlayers.length !== 0) {
+                if(rightPlayers.length == list.length - 1) {
+                    var sounds = [
+                        'horns.mp3',
+                        'allright.wav'
+                    ];
+                    playSimpleNoise(sounds[Math.floor(Math.random() * 2)])
+                }
                 rightPlayers.map(function(data) {
                     var styles = {
                         transform: 'rotate('+(Math.floor((Math.random() * 14) - 7))+'deg)'
