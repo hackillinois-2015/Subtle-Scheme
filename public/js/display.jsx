@@ -11,7 +11,7 @@ function playSound(file) {
 
 var backgroundAudio;
 function playBackground() {
-    var backgroundAudio = new Audio("/assets/audio/other/answerselection_buildup.mp3");
+    backgroundAudio = new Audio("/assets/audio/other/answerselection_buildup.mp3");
     backgroundAudio.autoplay = true;
     backgroundAudio.volume = 0.6;
     $.get();
@@ -29,7 +29,8 @@ function playBackground() {
 }
 
 function stopBackground() {
-    backgroundAudio.stop();
+    backgroundAudio.pause();
+    backgroundAudio.currentTime = 0;
 }
 
 function playSimpleNoise(file) {
