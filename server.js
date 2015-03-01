@@ -292,7 +292,7 @@ var beginNewGame = function (session) {
 
 var lieIsUnique = function (session, lie) {
 	session.players.forEach(function (player) {
-		if(player.lie.toLowerCase().replace(/\s/g, '') == lie.toLowerCase().replace(/\s/g, '')) return false;
+		if(player.lie == lie) return false;
 	})
 	return true;
 }

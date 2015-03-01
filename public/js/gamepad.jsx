@@ -12,8 +12,6 @@ var Gamepad = React.createClass({
             gameCode: gameCode
         };
 
-        console.log('sendTo', sendTo);
-
         whoami = username;
 
         socket.emit('gamepad join', JSON.stringify(sendTo));
@@ -25,8 +23,6 @@ var Gamepad = React.createClass({
         var state = this.state;
         state.session = session;
 
-        console.log(session);
-
         this.setState(state);
     },
 
@@ -37,15 +33,12 @@ var Gamepad = React.createClass({
         socket.on('session update', this.getSessionUpdate);
 
         socket.on('alert', function (data) {
-            console.log('alert', data);
         });
 
         socket.on('bad game code', function (data) {
-            console.log('badcode', data);
         })
 
         socket.on('duplicate username', function (data) {
-            console.log('duplicate username', data);
         })
 
         return {
@@ -92,7 +85,7 @@ var Gamepad = React.createClass({
                 return (
                     <div className="questionTime">
                         <div className="title">{question.prompt}</div>
-                        <LyingForm sendLie={this.sendInLie} answer={question.answer} />
+                        <LyingForm sendLie={this.sendInLie} answer={question.answer} players={session.players} />
                     </div>
                 );
             case "choosing":
@@ -149,16 +142,26 @@ var LyingForm = React.createClass({
         var alert = undefined;
 
         if(lieText.length == 0) {
+            alert = "Please enter in a LIE!";
+            var state = this.state;
+            state.alert = alert;
+            this.setState(state);
             return;
         }
 
-        if(lieText == this.props.answer) {
-            alert = "You picked the truth! Please enter something else.";
-
-            console.log(session);
+        if(lieText.toLowerCase().replace(/\s/g, '') == this.props.answer.toLowerCase().replace(/\s/g, '')) {
+            alert = "You picked either a lie or a truth! Please enter something else.";
         }
 
-        console.log(lieText, alert, this.props.answer);
+        var players = this.props.players;
+
+        for(var i = 0; i < players.length; i++) {
+            var player = players[i];
+
+            if(player.lie.toLowerCase().replace(/\s/g, '') == lieText.toLowerCase().replace(/\s/g, '')) {
+                alert = "You picked either a lie or a truth! Please enter something else.";
+            }
+        }
 
         var state = this.state;
         state.alert = alert;
@@ -167,6 +170,7 @@ var LyingForm = React.createClass({
         if(typeof alert != "undefined") {
             return;
         }
+
         this.setState({
             sent: true,
             alert: undefined
@@ -260,9 +264,6 @@ var ChoosingForm = React.createClass({
 var ChoosingButton = React.createClass({
     buttonHandle: function() {
         socket.emit('submit choice', this.props.answer);
-
-        console.log(this.props);
-
         this.props.onButtonChosen();
     },
 

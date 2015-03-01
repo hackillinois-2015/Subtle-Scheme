@@ -58,8 +58,6 @@ var Display = React.createClass({
         state.session = session;
         this.setState(state);
 
-        console.log(session);
-
     },
 
     getInitialState: function() {
@@ -74,7 +72,6 @@ var Display = React.createClass({
         socket.on('session update', this.getSessionUpdate);
 
         socket.on('bad question sets', function () {
-            console.log('BAD was called');
         })
 
         return {
@@ -274,7 +271,6 @@ var PickQuestions = React.createClass({
 
         var roomList = Object.keys(rooms).map(function(index) {
             var room = rooms[index];
-            console.log(room);
             return (
                 <div className="col-xs-4 text-center">
                     <div className="form-group">
@@ -446,9 +442,7 @@ var StartRevealing = React.createClass({
         var failedPlayers = {};
         var rightPlayers = [];
 
-        console.log('answer', answer);
         session.players.map(function(player, k) {
-            console.log('chosen', player.choice, player.choice == answer);
             if(player.choice == answer) {
                 rightPlayers.push({username: player.username, userId: k});
             } else {
@@ -459,8 +453,6 @@ var StartRevealing = React.createClass({
                 failedPlayers[player.choice].push({username: player.username, userId: k});
             }
         });
-
-        console.log('rightPlayers', rightPlayers);
 
         var list = [];
         session.players.map(function(player, k) {
