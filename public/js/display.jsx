@@ -178,8 +178,8 @@ var Display = React.createClass({
                             </div>
 
                             <div className="content">
+                                <p>Join on your phone or tablet at <span className="everybody">http://SubtleSche.me/</span></p>
                                 <p>Press <span className="everybody">EVERYBODY IS IN</span> to start the game.</p>
-                                <p>Join on your phone or tablet at http://SubtleSche.me/</p>
                             </div>
                         </div>
                         <DisplayLobby players={session.players}/>
