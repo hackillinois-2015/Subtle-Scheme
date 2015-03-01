@@ -284,10 +284,10 @@ var updateScores = function (session) {
 	var round = session.rounds[session.round];
 	session.players.forEach(function (player) {
 		//give points for finding truth
-		if(player.choice == answer) player.score += round.truthReward;
+		if(player.choice.replace(/ /g,'').toLowerCase() == answer.replace(/ /g,'').toLowerCase()) player.score += round.truthReward;
 		//give points for successful lies
 		for(var i = 0; i < session.players.length; i++) {
-			if(session.players[i].choice == player.lie) player.score += round.truthReward;
+			if(session.players[i].choice == player.lie) player.score += round.foolReward;
 		}
 	})
 }
