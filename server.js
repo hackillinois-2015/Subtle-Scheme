@@ -298,7 +298,7 @@ var progressSession = function (session) {
 	var gameOver = false;
 	var newRound = false;
 	//increment round / question
-	if(session.question < round.questionCount) session.question++;
+	if(session.question < round.questionCount-1) session.question++;
 	else if(session.round < session.rounds.length-1){
 		session.round++;
 		session.question = 0;
