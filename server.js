@@ -226,14 +226,6 @@ io.on('connection', function (socket) {
 		else {
 			//set user's choice
 			player.choice = choice;
-			/*
-			//check if all choices are in
-			if(allChoicesIn(sessions[socket.gameCode]))
-			{
-				updateScores(sessions[socket.gameCode]);
-				sessions[socket.gameCode].phase = "revealing";
-			}
-			*/
 			//update
 			updateClientSessions(socket.gameCode);
 		}
@@ -314,13 +306,6 @@ var progressSession = function (session) {
 	} else {//finished final round
 		gameOver = true;
 	}
-	//set phase
-	if(gameOver) session.phase = "gameOver";
-	else if(newRound) session.phase = "roundIntro";
-	else {
-		session.phase = "lying";
-		setSessionQuestion(session);
-	}
 	//clear current question
 	session.currentQuestion = null;
 	//clear player lies and choices
@@ -328,6 +313,14 @@ var progressSession = function (session) {
 		player.lie = "";
 		player.choice = "";
 	})
+	//set phase
+	if(gameOver) session.phase = "gameOver";
+	else if(newRound) session.phase = "roundIntro";
+	else {
+		session.phase = "lying";
+		setSessionQuestion(session);
+		return;//setSessionQuestion will updateClientSessions
+	}
 	//update clients
 	updateClientSessions(session.gameCode);
 }
