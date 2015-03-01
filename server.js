@@ -23,7 +23,7 @@ app.use(express.static(pdir));
 var port = 80;
 //game config
 var MAX_PLAYERS = 8;
-var GAME_NAME = "Subtle Pineapple";
+var GAME_NAME = "Subtle Scheme";
 /*************************
 	PAGE ROUTES
 **************************/
@@ -175,14 +175,14 @@ io.on('connection', function (socket) {
 	/*************************
 		PHASE: JOINING
 	**************************/
-	socket.on('everybody in', function() {
+	socket.on('everybody in', function () {
 		sessions[socket.gameCode].phase = 'roundIntro';
 		updateClientSessions(socket.gameCode);
 	});
 	/*************************
 		PHASE: ROUND INTRO
 	**************************/
-	socket.on('roundIntro end', function() {
+	socket.on('roundIntro end', function () {
 		var session = sessions[socket.gameCode];
 		session.phase = 'lying';
 		setSessionQuestion(session);
@@ -193,7 +193,7 @@ io.on('connection', function (socket) {
 	/*======================
 		Gamepad Specific
 	=======================*/
-	socket.on('submit lie', function(lie) {
+	socket.on('submit lie', function (lie) {
 		var player = getSessionPlayer(sessions[socket.gameCode], socket.username);
 		if(player == null) socket.emit('invalid player');
 		else {
@@ -210,7 +210,7 @@ io.on('connection', function (socket) {
 	/*======================
 		Display Specific
 	=======================*/
-	socket.on('done lying', function() {
+	socket.on('done lying', function () {
 		sessions[socket.gameCode].phase = "choosing";
 		updateClientSessions(socket.gameCode);
 	})
@@ -220,7 +220,7 @@ io.on('connection', function (socket) {
 	/*======================
 		Gamepad Specific
 	=======================*/
-	socket.on('submit choice', function(choice) {
+	socket.on('submit choice', function (choice) {
 		var player = getSessionPlayer(sessions[socket.gameCode], socket.username);
 		if(player == null) socket.emit('invalid player');
 		else {
@@ -233,7 +233,7 @@ io.on('connection', function (socket) {
 	/*======================
 		Display Specific
 	=======================*/
-	socket.on('done choosing', function() {
+	socket.on('done choosing', function () {
 		updateScores(sessions[socket.gameCode]);
 		sessions[socket.gameCode].phase = "revealing";
 		updateClientSessions(socket.gameCode);
@@ -244,7 +244,7 @@ io.on('connection', function (socket) {
 	/*======================
 		Display Specific
 	=======================*/
-	socket.on('done revealing', function() {
+	socket.on('done revealing', function () {
 		sessions[socket.gameCode].phase = "scoreboard";
 		updateClientSessions(socket.gameCode);
 	})
@@ -254,12 +254,15 @@ io.on('connection', function (socket) {
 	/*======================
 		Display Specific
 	=======================*/
-	socket.on('done showing scoreboard', function() {
+	socket.on('done showing scoreboard', function () {
 		progressSession(sessions[socket.gameCode]);
 	})
 	/*************************
 		PHASE: GAME OVER
 	**************************/
+	socket.on('new game', function () {
+		beginNewGame(sessions[socket.gameCode]);
+	})
 	/*************************
 		CLEAN UP
 	**************************/
@@ -271,6 +274,21 @@ io.on('connection', function (socket) {
 		//if a gamepad leaves, do nothing. let them potentially reconnect
 	});
 });
+
+var beginNewGame = function (session) {
+	//reset player scores
+	session.players.forEach(function (player) {
+		player.score = 0;
+	})
+	//set rounds to 0
+	session.round = 0;
+	//set question to 0
+	session.question = 0;
+	//set phase to roundIntro
+	session.phase = "roundIntro";
+	//update client
+	updateClientSessions(session.gameCode);
+}
 
 var lieIsUnique = function (session, lie) {
 	session.players.forEach(function (player) {

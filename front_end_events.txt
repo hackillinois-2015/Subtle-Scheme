@@ -26,6 +26,7 @@
 'done choosing' = done with choosing phaase. ask to move onto revealing phase
 'done revealing' = done with the reveal. ask to move onto scoreboard phase
 'done showing scoreboard' = done showing scoreboard. update session to either move to game over or lying phase
+'new game' = start a new game with same players, but track which questions have been used
 
 `````````Gamepad Only````````````
 'gamepad join' = once the user inputs name and gamecode, try to join room
