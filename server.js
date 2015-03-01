@@ -90,6 +90,7 @@ var session = function () {
 	this.phase = 'joining';
 	this.rounds = ROUNDS;
 	this.currentQuestion = null;
+	this.canPlayAgain = true;
 }
 
 var player = function () {
@@ -338,7 +339,11 @@ var progressSession = function (session) {
 		player.choice = "";
 	})
 	//set phase
-	if(gameOver) session.phase = "gameOver";
+	if(gameOver) {
+		session.phase = "gameOver";
+		//check if we can play again
+		if(!canPlayAgain(session)) session.canPlayAgain = false;
+	}
 	else if(newRound) session.phase = "roundIntro";
 	else {
 		session.phase = "lying";
@@ -348,7 +353,19 @@ var progressSession = function (session) {
 	//update clients
 	updateClientSessions(session.gameCode);
 }
-
+var canPlayAgain = function (session) {
+	var askedCount = session.questionsAsked.length;
+	var totalQuestionCount = 0;
+	session.questionSets.forEach(function (questionSetId) {
+		questionSetsModel.findOne({ _id: questionSetId.toObjectId() }, function (error, questionSet) {
+			if(error) return false;
+			else {
+				totalQuestionCount += questionSet.questions.length;
+			}
+		})
+	})
+	return askedCount+10 <= totalQuestionCount;
+}
 var getSessionPlayer = function (session, username) {
 	//find user in session
 	var player = null;
