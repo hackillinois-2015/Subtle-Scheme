@@ -21,6 +21,8 @@
 'display join' = once question sets have been selected, try to create the room
 	-emit: selectedQuestionSets(String[])
 'roundIntro end' = closes round intro and transition to lying phase
+'done lying' = done with lying phase. ask to move onto choose phase
+'done choosing' = done with choosing phaase. ask to move onto revealing phase
 'done revealing' = done with the reveal. ask to move onto scoreboard phase
 'done showing scoreboard' = done showing scoreboard. update session to either move to game over or lying phase
 

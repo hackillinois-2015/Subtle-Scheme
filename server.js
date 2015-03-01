@@ -200,11 +200,20 @@ io.on('connection', function (socket) {
 		else {
 			//set user's lie
 			player.lie = lie;
+			/*
 			//check if all lies are in
 			if(allLiesIn(sessions[socket.gameCode])) sessions[socket.gameCode].phase = "choosing";
+			*/
 			//update
 			updateClientSessions(socket.gameCode);
 		}
+	})
+	/*======================
+		Display Specific
+	=======================*/
+	socket.on('done lying', function() {
+		sessions[socket.gameCode].phase = "choosing";
+		updateClientSessions(socket.gameCode);
 	})
 	/*************************
 		PHASE: CHOOSING
@@ -218,15 +227,25 @@ io.on('connection', function (socket) {
 		else {
 			//set user's choice
 			player.choice = choice;
+			/*
 			//check if all choices are in
 			if(allChoicesIn(sessions[socket.gameCode]))
 			{
 				updateScores(sessions[socket.gameCode]);
 				sessions[socket.gameCode].phase = "revealing";
 			}
+			*/
 			//update
 			updateClientSessions(socket.gameCode);
 		}
+	})
+	/*======================
+		Display Specific
+	=======================*/
+	socket.on('done choosing', function() {
+		updateScores(sessions[socket.gameCode]);
+		sessions[socket.gameCode].phase = "revealing";
+		updateClientSessions(socket.gameCode);
 	})
 	/*************************
 		PHASE: REVEALING
@@ -269,6 +288,9 @@ var updateScores = function (session) {
 		//give points for finding truth
 		if(player.choice == answer) player.score += round.truthReward;
 		//give points for successful lies
+		for(var i = 0; i < session.players.length; i++) {
+			if(players[i].choice == player.lie) player.score += round.truthReward;
+		}
 	})
 }
 
@@ -279,7 +301,7 @@ var progressSession = function (session) {
 	//clear player lies and choices
 	//update clients
 }
-
+/*
 var allLiesIn = function (session) {
 	for(var i = 0; i < session.players.length; i++) {
 		//return false if any don't have a lie
@@ -295,7 +317,7 @@ var allChoicesIn = function (session) {
 	}
 	return true;
 }
-
+*/
 var getSessionPlayer = function (session, username) {
 	//find user in session
 	var player = null;
