@@ -16,13 +16,13 @@ function playSound(file) {
     }, true);
 }
 
-var backgroundAudio;
+var backgroundAudio = new Audio;
 function playBackground() {
     if(disabledSound) {
         return;
     }
 
-    backgroundAudio = new Audio("/assets/audio/other/answerselection_buildup.mp3");
+    backgroundAudio.src = "/assets/audio/other/answerselection_buildup.mp3";
     backgroundAudio.autoplay = true;
     backgroundAudio.volume = 0.6;
     $.get();
@@ -63,13 +63,13 @@ function playSimpleNoise(file) {
     }, true);
 }
 
-var lobbyAudio;
+var lobbyAudio = new Audio;
 function playLobby() {
     if(disabledSound) {
         return;
     }
 
-    lobbyAudio = new Audio("/assets/audio/other/maintheme.mp3");
+    lobbyAudio.src = "/assets/audio/other/maintheme.mp3";
     lobbyAudio.autoplay = true;
     lobbyAudio.loop = true;
     lobbyAudio.volume = 0.6;
