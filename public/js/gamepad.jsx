@@ -153,7 +153,7 @@ var LyingForm = React.createClass({
         }
 
         if(lieText == this.props.answer) {
-            alert = "You picked the truth! Please enter soemthing else.";
+            alert = "You picked the truth! Please enter something else.";
 
             console.log(session);
         }
@@ -191,7 +191,7 @@ var LyingForm = React.createClass({
 
         if(typeof alert != "undefined") {
             alertElement.push(
-                <div>{alert}</div>
+                <div className="notice-red">{alert}</div>
             );
         }
 

@@ -88,6 +88,10 @@ var Display = React.createClass({
         }, 2000);
     },
 
+    playAgain: function() {
+        socket.emit('new game');
+    },
+
     render: function() {
         var session = this.state.session;
 
@@ -104,7 +108,7 @@ var Display = React.createClass({
 
                             <div className="content">
                                 <p>Press <span className="everybody">EVERYBODY IS IN</span> to start the game.</p>
-                                <p>Join on your phone or tablet at http://asdf.com/</p>
+                                <p>Join on your phone or tablet at http://SubtleSche.me/</p>
                             </div>
                         </div>
                         <DisplayLobby players={session.players}/>
@@ -209,6 +213,10 @@ var Display = React.createClass({
                         <div className="scoreBoard">
                             <DisplayScores gameOver={gameOver} players={session.players} />
                         </div>
+                        <h3 className="title text-center">
+                            Game Over!<br />
+                            <small><a href="#" onClick={this.playAgain} >Play Again?</a></small>
+                        </h3>
                     </div>
                 );
             default:

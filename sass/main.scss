@@ -5,6 +5,11 @@ html {
     font-size: 12px;
 }
 
+html, body {
+    height: 100%;
+    background: url(/img/bg.png);
+}
+
 $lightblue: #03A9F4;
 $blue: #2196f3;
 
