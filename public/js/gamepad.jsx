@@ -55,6 +55,10 @@ var Gamepad = React.createClass({
         socket.emit('everybody in');
     },
 
+    sendInLie: function(data) {
+        socket.emit('submit lie', data);
+    },
+
     render: function() {
         var session = this.state.session;
         // var listSessions = Object.keys(session).map(function(index) {
@@ -77,7 +81,23 @@ var Gamepad = React.createClass({
                 var question = session.questionSets[session.question];
                 return (
                     <div className="questionTime">
-                        <div className="title">{question}</div>
+                        <div className="title">{question.name}</div>
+                    </div>
+                );
+            case "lying":
+                var question = session.currentQuestion;
+                return (
+                    <div className="questionTime">
+                        <div className="title">{question.prompt}</div>
+                        <LyingForm sendLie={this.sendInLie} answer={question.answer} />
+                    </div>
+                );
+            case "choosing":
+                var question = session.currentQuestion;
+                return (
+                    <div className="choosingTime">
+                        <div className="title">{question.prompt}</div>
+                        <ChoosingForm sendChoosing={this.sendInChoosing} players={session.players} />
                     </div>
                 );
             default:
@@ -103,6 +123,83 @@ var Gamepad = React.createClass({
             <div>
                 <div className="small-header">{this.state.status}</div>
             </div>
+        );
+    }
+});
+
+var LyingForm = React.createClass({
+    formHandle: function(e) {
+        e.preventDefault();
+
+        var lieText = this.refs.lieText.getDOMNode().value.trim();
+
+        var alert = undefined;
+
+        if(lieText == this.props.answer) {
+            alert = "You picked the truth! Please enter soemthing else.";
+
+            console.log(session);
+        }
+
+        console.log(lieText, alert, this.props.answer);
+
+        var state = this.state;
+        state.alert = alert;
+        this.setState(state);
+
+        if(typeof alert != "undefined") {
+            return;
+        }
+
+        this.props.sendLie(lieText);
+    },
+
+    getInitialState: function() {
+        return {sent: false, alert: undefined};
+    },
+
+    render: function() {
+        if(this.state.sent) {
+            return (
+                <div>Lie has been submitted</div>
+            );
+        }
+
+        var alert = this.state.alert;
+        var alertElement = [];
+
+        if(typeof alert != "undefined") {
+            alertElement.push(
+                <div>{alert}</div>
+            );
+        }
+
+        return (
+            <form onSubmit={this.formHandle}>
+                {alertElement}
+                <div className="form-group">
+                    <input type="text" className="form-control" ref="lieText" placeholder="Lie!" />
+                </div>
+                <div className="form-group">
+                    <button type="submit" className="btn">Enter Lie</button>
+                </div>
+            </form>
+        );
+    }
+});
+
+var ChoosingForm = React.createClass({
+    render: function() {
+        return (
+            <form onSubmit={this.formHandle}>
+                {alertElement}
+                <div className="form-group">
+                    <input type="text" className="form-control" ref="lieText" placeholder="Lie!" />
+                </div>
+                <div className="form-group">
+                    <button type="submit" className="btn">Enter Lie</button>
+                </div>
+            </form>
         );
     }
 });

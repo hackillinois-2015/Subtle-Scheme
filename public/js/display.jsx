@@ -12,10 +12,10 @@ var Display = React.createClass({
 
         var state = this.state;
         state.session = session;
+        this.setState(state);
 
         console.log(session);
 
-        this.setState(state);
     },
 
     getInitialState: function() {
@@ -71,10 +71,32 @@ var Display = React.createClass({
                     </div>
                 );
             case "lying":
+                var progressBarWidth = {
+                    width: '60%'
+                }
+                var round = session.rounds[session.round];
+
                 return (
-                    <div className="lyingTime">
-                        <h3 className="title">:~)</h3>
-                        <DisplayLobby players={session.players}/>
+                    <div>
+                        <div className="small-header">{round.name}</div>
+                        <div className="lyingTime">
+                            <h3 className="title">{session.currentQuestion.prompt}</h3>
+                            <WaitingPlayerLies players={session.players} />
+                        </div>
+                    </div>
+                );
+                /*
+                        <div className="progress">
+                            <div className="progress-bar" role="progressbar" style={progressBarWidth}>
+                                enter lies now
+                            </div>
+                        </div>
+                */
+            case "choosing":
+                return (
+                    <div>
+                        <div className="small-header">{round.name}</div>
+                        <WaitingPlayerChoosing players={session.players} />
                     </div>
                 );
             default:
@@ -178,6 +200,93 @@ var DisplayLobby = React.createClass({
 
         return (
             <div className="row playerLobby playerColor">
+                {listPlayers}
+            </div>
+        );
+    }
+});
+
+var WaitingPlayerLies = React.createClass({
+    endLies: function() {
+        setTimeout(function() {
+            socket.emit('done lying');
+        }, 1000)
+    },
+
+    render: function() {
+        var players = this.props.players;
+        var finishedUsers = 0;
+
+        listPlayers = players.map(function(player) {
+            var active = "";
+
+            if(player.lie.length > 0) {
+                active = "active";
+                finishedUsers++;
+            }
+
+            return (
+                <div className={"" + active}>
+                    <div className="playerLobbyItem"></div>
+                </div>
+            );
+        });
+
+        var finishElement = [];
+
+        if(finishedUsers == players.length) {
+            finishElement.push(
+                <div className="finished">All lies have been entered!</div>
+            );
+
+            this.endLies();
+        }
+
+        return (
+            <div className="WaitingPlayerLies playerColor">
+                {finishElement}
+                {listPlayers}
+            </div>
+        );
+    }
+});
+
+var WaitingPlayerChoosing = React.createClass({
+    endChoosing: function() {
+        setTimeout(function() {
+            socket.emit('done choosing');
+        }, 1000)
+    },
+
+    render: function() {
+        listPlayers = players.map(function(player) {
+            var active = "";
+
+            if(player.choice.length > 0) {
+                active = "active";
+                finishedUsers++;
+            }
+
+            return (
+                <div className={"" + active}>
+                    <div className="playerLobbyItem"></div>
+                </div>
+            );
+        });
+
+        var finishElement = [];
+
+        if(finishedUsers == players.length) {
+            finishElement.push(
+                <div className="finished">Everyone has chosen!</div>
+            );
+
+            this.endChoosing();
+        }
+
+        return (
+            <div className="WaitingPlayerChoosing playerColor">
+                {finishElement}
                 {listPlayers}
             </div>
         );
