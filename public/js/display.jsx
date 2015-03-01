@@ -529,6 +529,12 @@ var StartRevealing = React.createClass({
 });
 
 var DisplayScores = React.createClass({
+    componentDidMount: function() {
+        setTimeout(function() {
+            socket.emit('done showing scoreboard');
+        }, 4000);
+    },
+
     render: function() {
         var players = this.props.players;
 
