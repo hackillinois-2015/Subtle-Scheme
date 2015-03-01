@@ -301,12 +301,10 @@ var updateScores = function (session) {
 }
 
 var progressSession = function (session) {
-	console.log('a');
 	var round = session.rounds[session.round];
 	//one way flags
 	var gameOver = false;
 	var newRound = false;
-	console.log('b');
 	//increment round / question
 	if(session.question < round.questionCount) session.question++;
 	else if(session.round < session.rounds.length-1){
@@ -316,7 +314,6 @@ var progressSession = function (session) {
 	} else {//finished final round
 		gameOver = true;
 	}
-	console.log('c');
 	//set phase
 	if(gameOver) session.phase = "gameOver";
 	else if(newRound) session.phase = "roundIntro";
@@ -324,36 +321,17 @@ var progressSession = function (session) {
 		session.phase = "lying";
 		setSessionQuestion(session);
 	}
-	console.log('d');
 	//clear current question
 	session.currentQuestion = null;
-	console.log('e');
 	//clear player lies and choices
 	session.players.forEach(function (player) {
 		player.lie = "";
 		player.choice = "";
 	})
-	console.log('f');
 	//update clients
 	updateClientSessions(session.gameCode);
 }
-/*
-var allLiesIn = function (session) {
-	for(var i = 0; i < session.players.length; i++) {
-		//return false if any don't have a lie
-		if(session.players[i].lie.length <= 0) return false;
-	}
-	return true;
-}
 
-var allChoicesIn = function (session) {
-	for(var i = 0; i < session.players.length; i++) {
-		//return false if any don't have a choice
-		if(session.players[i].choice.length <= 0) return false;
-	}
-	return true;
-}
-*/
 var getSessionPlayer = function (session, username) {
 	//find user in session
 	var player = null;
@@ -382,6 +360,7 @@ var setSessionQuestion = function (session) {
 			}
 			//set current question
 			session.currentQuestion = question;
+			console.log('currentQuestion set',session.currentQuestion);
 			//update questionsAsked
 			session.questionsAsked.push(randQuestionId)
 			//update clients
