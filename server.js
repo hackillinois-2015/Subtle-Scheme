@@ -127,7 +127,7 @@ io.on('connection', function (socket) {
 		Display Specific
 	=======================*/
 	socket.on('display join', function (questionSetsJSON) {
-		console.log('Display Attempting to Join');
+		//console.log('Display Attempting to Join');
 		var questionSets = JSON.parse(questionSetsJSON);
 		//console.log(JSON.stringify(questionSets));
 		//mark socket as display
@@ -142,7 +142,7 @@ io.on('connection', function (socket) {
 			addSession(gameCode, questionSets);
 			//add as a client
 			addClient(socket);
-			console.log('New Display: '+socket.gameCode);
+			//console.log('New Display: '+socket.gameCode);
 		}
 	});
 	/*======================
@@ -272,7 +272,7 @@ io.on('connection', function (socket) {
 		CLEAN UP
 	**************************/
 	socket.on('disconnect', function() {
-		console.log("Client Disconnected");
+		//console.log("Client Disconnected");
 		if(isExistingGameCode(socket.gameCode)) sessions[socket.gameCode].clientCount--;
 		//if the display left, kick everyone and delete session
 		if(socket.role == "display") closeSession(socket.gameCode);
@@ -348,15 +348,14 @@ var getSessionPlayer = function (session, username) {
 	return player;
 }
 var setSessionQuestion = function (session) {
-	console.log("questionSets: "+JSON.stringify(session.questionSets));
+	//console.log("questionSets: "+JSON.stringify(session.questionSets));
 	//pick a random question set
 	var rand = Math.floor(Math.random()*session.questionSets.length);
 	//get the question set
 	questionSetsModel.findOne({ _id: session.questionSets[rand].toObjectId() }, function (error, questionSet) {
-		if(error) console.log("error: "+JSON.stringify(error));//error occured
+		if(error) return null;//console.log("error: "+JSON.stringify(error));//error occured
 		else {
 			var isNew = false;
-			console.log()
 			while(!isNew) {
 				//pick a random one from the question set
 				var randa = Math.floor(Math.random()*questionSet.questions.length);
@@ -379,7 +378,7 @@ var setSessionQuestion = function (session) {
 var usernameExists = function (gameCode, username) {
 	for(var i = 0; i < sessions[gameCode].players.length; i++) {
 		if(sessions[gameCode].players[i].username == username) {
-			console.log("duplicate username: ("+sessions[gameCode].players[i].username+", "+username+")");
+			//console.log("duplicate username: ("+sessions[gameCode].players[i].username+", "+username+")");
 			return true;
 		}
 	}
@@ -387,7 +386,7 @@ var usernameExists = function (gameCode, username) {
 }
 //TODO: THIS DOESN'T WORK PROPERLY!
 var validQuestionSets = function (questionSets) {
-	console.log("Valdiating question sets: "+JSON.stringify(questionSets));
+	//console.log("Valdiating question sets: "+JSON.stringify(questionSets));
 	for(var i = 0; i < questionSets.length; i++) {
 		questionSetsModel.findOne({ _id: questionSets[i].toObjectId() }, function (err, doc) {
 			if(err) return false;
