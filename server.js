@@ -198,7 +198,7 @@ io.on('connection', function (socket) {
 		if(player == null) socket.emit('invalid player');
 		else {
 			//ensure lie is unique
-			if(!lieIsUnique(session, lie)) socket.emit('duplicate lie');
+			if(!lieIsUnique(sessions[socket.gameCode], lie)) socket.emit('duplicate lie');
 			else {
 				//set user's lie
 				player.lie = lie;
@@ -301,31 +301,39 @@ var updateScores = function (session) {
 }
 
 var progressSession = function (session) {
+	console.log('a');
 	var round = session.rounds[session.round];
 	//one way flags
 	var gameOver = false;
 	var newRound = false;
-
+	console.log('b');
 	//increment round / question
-	if(session.question < round.questionCount) question++;
+	if(session.question < round.questionCount) session.question++;
 	else if(session.round < session.rounds.length-1){
-		round++;
-		question = 0;
+		session.round++;
+		session.question = 0;
 		newRound = true;
 	} else {//finished final round
 		gameOver = true;
 	}
+	console.log('c');
 	//set phase
 	if(gameOver) session.phase = "gameOver";
 	else if(newRound) session.phase = "roundIntro";
-	else session.phase = "lying";
+	else {
+		session.phase = "lying";
+		setSessionQuestion(session);
+	}
+	console.log('d');
 	//clear current question
 	session.currentQuestion = null;
+	console.log('e');
 	//clear player lies and choices
 	session.players.forEach(function (player) {
 		player.lie = "";
 		player.choice = "";
 	})
+	console.log('f');
 	//update clients
 	updateClientSessions(session.gameCode);
 }
