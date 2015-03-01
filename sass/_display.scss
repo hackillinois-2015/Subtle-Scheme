@@ -229,5 +229,155 @@
         }
     }
 
+    .relative {
+        position: relative;
+    }
+
+    .finished {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        color: #424242;
+        padding: 13px 0;
+        font-weight: bold;
+        text-align: center;
+        font-size: 2em;
+    }
+
+    .choiceList {
+        .choiceItems {
+            display: block;
+            text-align: center;
+            font-size: 2em;
+            margin: 0 0 15px;
+            height: 40px;
+            color: #424242;
+            background: #F5F5F5;
+            border: 1px solid #E0E0E0;
+            padding: 6px 0 0;
+        }
+
+        padding: 0 0 30px;
+    }
+
+    .player_1 {
+        color: #64B5F6;
+        border-color: #64B5F6;
+        background: #BBDEFB;
+    }
+
+    .player_2 {
+        color: #9575CD;
+        border-color: #9575CD;
+        background: #D1C4E9;
+    }
+
+    .player_3 {
+        color: #81C784;
+        border-color: #81C784;
+        background: #C8E6C9;
+    }
+
+    .player_4 {
+        color: #A1887F;
+        border-color: #A1887F;
+        background: #D7CCC8;
+    }
+
+    .player_5 {
+        color: #F06292;
+        border-color: #F06292;
+        background: #F8BBD0;
+    }
+
+    .player_6 {
+        color: #FFB74D;
+        border-color: #FFB74D;
+        background: #FFE0B2;
+    }
+
+    .player_7 {
+        color: #90A4AE;
+        border-color: #90A4AE;
+        background: #CFD8DC;
+    }
+
+    .player_8 {
+        color: #7986CB;
+        border-color: #7986CB;
+        background: #C5CAE9;
+    }
+
+    .singleChoice {
+        .showAuthor {
+            padding: 10px 0;
+            color: #424242;
+            font-size: 0.6em;
+        }
+
+        &.answer {
+            .showAuthor {
+                padding: 20px 0 5px;
+            }
+
+            padding: 0
+        }
+
+        display: block;
+        text-align: center;
+        font-size: 3em;
+        margin: 0 0 15px;
+        height: 100px;
+        border: 1px solid;
+        padding: 15px 0 0;
+    }
+
+    .showScrubs {
+        .scrub {
+            font-size: 1.5em;
+            max-width: 170px;
+            width: 100%;
+            text-align: center;
+            padding: 8px 0;
+            border: 1px solid;
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        margin-top: -15px;
+        text-align: center;
+    }
+
+    .scoreBoard {
+        .playerBoardItem {
+            & > div:not(.clear) {
+                float: left;
+                width: 50%;
+            }
+
+            .totalPoints {
+                text-align: right;
+            }
+
+            .clear {
+                clear: both;
+            }
+
+            font-size: 2em;
+            font-weight: 600;
+            margin: 0 0 10px;
+            padding: 10px 20px;
+            border: 1px solid;
+        }
+
+        max-width: 600px;
+        width: 100%;
+        margin: 30px auto;
+    }
+
     padding: 30px 0 0;
 }

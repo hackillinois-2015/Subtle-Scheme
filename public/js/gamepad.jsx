@@ -143,6 +143,10 @@ var LyingForm = React.createClass({
 
         var alert = undefined;
 
+        if(lieText.length == 0) {
+            return;
+        }
+
         if(lieText == this.props.answer) {
             alert = "You picked the truth! Please enter soemthing else.";
 
@@ -158,6 +162,10 @@ var LyingForm = React.createClass({
         if(typeof alert != "undefined") {
             return;
         }
+        this.setState({
+            sent: true,
+            alert: undefined
+        });
 
         this.props.sendLie(lieText);
     },
@@ -197,25 +205,36 @@ var LyingForm = React.createClass({
 });
 
 var ChoosingForm = React.createClass({
-    buttonHandler: function(answer) {
-        console.log(answer);
-        socket.emit('submit choice', answer);
+    removeForm: function() {
+        this.setState({remove: true});
+    },
+
+    getInitialState: function() {
+        return {remove: false}
     },
 
     render: function() {
+        if(this.state.remove) {
+            return (
+                <div className="choiceList">
+                    <div className="choiceItems">You have successfully chosen an answer!</div>
+                </div>
+            );
+        }
+
         var choices = [];
         var currentQuestion = this.props.currentQuestion;
 
         this.props.players.map(function(player) {
             if(player.username != whoami) {
                 choices.push(
-                    <ChoosingButton onButtonChosen={this.buttonHandler} answer={player.lie} />
+                    <ChoosingButton onButtonChosen={this.removeForm} answer={player.lie} />
                 );
             }
-        })
+        }.bind(this))
 
         choices.push(
-            <ChoosingButton onButtonChosen={this.buttonHandler} answer={currentQuestion.answer} />
+            <ChoosingButton onButtonChosen={this.removeForm} answer={currentQuestion.answer} />
         );
 
         choices = shuffle(choices);
@@ -230,7 +249,11 @@ var ChoosingForm = React.createClass({
 
 var ChoosingButton = React.createClass({
     buttonHandle: function() {
-        this.props.onButtonChosen(this.props.answer);
+        socket.emit('submit choice', this.props.answer);
+
+        console.log(this.props);
+
+        this.props.onButtonChosen();
     },
 
     render: function() {

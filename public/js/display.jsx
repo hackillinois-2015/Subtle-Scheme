@@ -103,12 +103,22 @@ var Display = React.createClass({
                 );
 
             case "revealing":
+                var round = session.rounds[session.round];
                 return (
                     <div>
                         <div className="small-header">{round.name}</div>
-                        <div className="choosingTime">
+                        <div className="revealingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
-                            <WaitingPlayerChoosing players={session.players} currentQuestion={session.currentQuestion} />
+                            <StartRevealing data={session} />
+                        </div>
+                    </div>
+                );
+            case "scoreboard":
+                return (
+                    <div>
+                        <div className="small-header">Scoreboard</div>
+                        <div className="scoreBoard">
+                            <DisplayScores players={session.players} />
                         </div>
                     </div>
                 );
@@ -256,7 +266,7 @@ var WaitingPlayerLies = React.createClass({
         }
 
         return (
-            <div>
+            <div className="relative">
                 {finishElement}
                 <div className="WaitingPlayerLies playerColor">
                     {listPlayers}
@@ -287,7 +297,9 @@ var WaitingPlayerChoosing = React.createClass({
             }
 
             choices.push(
-                <div className="choiceItems">{player.lie}</div>
+                <div className="col-xs-4">
+                    <div className="choiceItems">{player.lie}</div>
+                </div>
             );
 
             return (
@@ -298,7 +310,9 @@ var WaitingPlayerChoosing = React.createClass({
         });
 
         choices.push(
-            <div className="choiceItems">{this.props.currentQuestion.answer}</div>
+            <div className="col-xs-4">
+                <div className="choiceItems">{this.props.currentQuestion.answer}</div>
+            </div>
         );
 
         choices = shuffle(choices);
@@ -314,14 +328,231 @@ var WaitingPlayerChoosing = React.createClass({
         }
 
         return (
-            <div>
-                <div className="choiceList">
+            <div className="relative">
+                <div className="choiceList row">
                     {choices}
                 </div>
                 {finishElement}
                 <div className="WaitingPlayerChoosing playerColor">
                     {listPlayers}
                 </div>
+            </div>
+        );
+    }
+});
+
+var StartRevealing = React.createClass({
+    getInitialState: function() {
+        var session = this.props.data;
+        var answer = session.currentQuestion.answer;
+
+        var failedPlayers = {};
+        var rightPlayers = [];
+
+        console.log('answer', answer);
+        session.players.map(function(player, k) {
+            console.log('chosen', player.choice, player.choice == answer);
+            if(player.choice == answer) {
+                rightPlayers.push({username: player.username, userId: k});
+            } else {
+                if(typeof failedPlayers[player.choice] == "undefined") {
+                    failedPlayers[player.choice] = [];
+                }
+
+                failedPlayers[player.choice].push({username: player.username, userId: k});
+            }
+        });
+
+        console.log('rightPlayers', rightPlayers);
+
+        var list = [];
+        session.players.map(function(player, k) {
+            list.push({
+                userId: k,
+                username: player.username,
+                lie: player.lie,
+                reveal: false
+            })
+        });
+
+        list.push({
+            username: null,
+            lie: session.currentQuestion.answer,
+            reveal: false,
+            answer: true
+        });
+
+        list = shuffle(list);
+
+        this.list = list;
+
+        return {
+            revealedAnswers: [],
+            failedPlayers: failedPlayers,
+            rightPlayers: rightPlayers,
+            current: "lieList"
+        }
+    },
+
+    lieList: function() {
+
+        list = this.list;
+
+        var rtn = [];
+
+        displayList = list.map(function(data) {
+            rtn.push(
+                <div className="col-xs-4">
+                    <div className="choiceItems">{data.lie}</div>
+                </div>
+            );
+        });
+
+        setTimeout(function() {
+            var state = this.state;
+            state.current = "lieReveal";
+            this.setState(state);
+        }.bind(this), 2000)
+
+        return rtn;
+    },
+
+    lieReveal: function() {
+        var state = this.state;
+        var list = this.list;
+        var failedPlayers = state.failedPlayers;
+        var rightPlayers = state.rightPlayers;
+        var scrubs = [];
+
+        if(typeof this.inc == "undefined") {
+            this.inc = -1;
+        }
+
+        this.inc++;
+
+        if(this.inc >= list.length) {
+            setTimeout(function() {
+                socket.emit('done revealing');
+            }, 3000)
+
+            if(rightPlayers.length !== 0) {
+                rightPlayers.map(function(data) {
+                    var styles = {
+                        transform: 'rotate('+(Math.floor((Math.random() * 14) - 7))+'deg)'
+                    };
+
+                    scrubs.push(
+                        <div className={"scrub player_" + (data.userId + 1)} style={styles}>
+                            {data.username}
+                        </div>
+                    );
+                });
+            }
+
+            return (
+                <div className="col-xs-12">
+                    <div className="singleChoice answer">
+                        <div className="showAuthor">
+                            Correct Answer:
+                        </div>
+                        {this.answer.lie}
+                    </div>
+                    <div className="showScrubs">
+                        {scrubs}
+                    </div>
+                </div>
+            );
+        }
+
+        if(list[this.inc].answer) {
+            this.answer = list[this.inc];
+            return this.lieReveal();
+        }
+
+        if(typeof failedPlayers[list[this.inc].lie] == "undefined" || failedPlayers[list[this.inc].lie].length === 0) {
+            return this.lieReveal();
+        }
+
+        list[this.inc].reveal = true;
+
+        var userCount = failedPlayers[list[this.inc].lie].length;
+
+        failedPlayers[list[this.inc].lie].map(function(data, k) {
+            var styles = {
+                transform: 'rotate('+(Math.floor((Math.random() * 14) - 7))+'deg)'
+            };
+
+            scrubs.push(
+                <div className={"scrub player_" + (data.userId + 1)} style={styles}>
+                    {data.username}
+                </div>
+            );
+        }.bind(this));
+
+        this.list = list;
+
+        setTimeout(function() {
+            var state = this.state;
+            state.current = "lieReveal";
+            this.setState(state);
+        }.bind(this), 3000)
+
+        return (
+            <div className="col-xs-12">
+                <div className={"singleChoice player_" + (list[this.inc].userId + 1)}>
+                    {list[this.inc].lie}
+                    <div className="showAuthor">
+                        By: {list[this.inc].username}
+                    </div>
+                </div>
+                <div className="showScrubs">
+                    {scrubs}
+                </div>
+            </div>
+        );
+    },
+
+    render: function() {
+        var render = "";
+        if(this.state.current === "lieList") {
+            render = this.lieList();
+        } else if(this.state.current === "lieReveal") {
+            render = this.lieReveal();
+        }
+
+        return (
+            <div className="choiceList row">
+                {render}
+            </div>
+        );
+    }
+});
+
+var DisplayScores = React.createClass({
+    render: function() {
+        var players = this.props.players;
+
+        players.sort(function(a, b) {
+            if (a.score < b.score) {
+                return 1;
+            }
+
+            return 0;
+        });
+
+        playerList = this.props.players.map(function(player, k) {
+            return (
+                <div className={"playerBoardItem player_" + (k + 1)}>
+                    <div className="playerName">{player.username}</div>
+                    <div className="totalPoints">{player.score}</div>
+                    <div className="clear"></div>
+                </div>
+            );
+        });
+
+        return (
+            <div>
+                {playerList}
             </div>
         );
     }
