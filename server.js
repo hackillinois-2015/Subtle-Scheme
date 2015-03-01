@@ -281,6 +281,9 @@ io.on('connection', function (socket) {
 });
 
 var lieIsUnique = function (session, lie) {
+	session.players.forEach(function (player) {
+		if(player.lie == lie) return false;
+	})
 	return true;
 }
 
