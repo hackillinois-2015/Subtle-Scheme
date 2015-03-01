@@ -166,8 +166,6 @@ var Display = React.createClass({
     render: function() {
         var session = this.state.session;
 
-        console.log(session);
-
         switch(session.phase) {
             case "joining":
                 var playerCount = session.players.length;
