@@ -60,7 +60,7 @@ var ROUNDS = [
 	{
 		name: "Round 2",
 		foolReward: 1000,
-		truthReward: 2000,        
+		truthReward: 2000,
 		questionCount: 3
 	},
 	{
@@ -292,7 +292,7 @@ var beginNewGame = function (session) {
 
 var lieIsUnique = function (session, lie) {
 	session.players.forEach(function (player) {
-		if(player.lie == lie) return false;
+		if(player.lie.toLowerCase().replace(/\s/g, '') == lie.toLowerCase().replace(/\s/g, '')) return false;
 	})
 	return true;
 }
@@ -402,7 +402,7 @@ var validQuestionSets = function (questionSets) {
 var addGamePad = function (gameCode, username) {
 	var index = sessions[gameCode].players.length;
 	sessions[gameCode].players[index] = new player();
-	sessions[gameCode].players[index].username = username; 
+	sessions[gameCode].players[index].username = username;
 }
 
 var closeSession = function (gameCode) {
