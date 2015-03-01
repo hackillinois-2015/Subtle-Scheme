@@ -103,6 +103,8 @@ var Gamepad = React.createClass({
                     </div>
                 );
             case "revealing":
+            case "scoreboard":
+            case "gameOver":
                 return (
                     <div className="revealingTime">
                         Answers and Lies are being revealed in the main screen.

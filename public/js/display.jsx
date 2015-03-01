@@ -74,6 +74,8 @@ var Display = React.createClass({
                 }
                 var round = session.rounds[session.round];
 
+                console.log(session, session.currentQuestion);
+
                 return (
                     <div>
                         <div className="small-header">{round.name}</div>
@@ -119,6 +121,16 @@ var Display = React.createClass({
                         <div className="small-header">Scoreboard</div>
                         <div className="scoreBoard">
                             <DisplayScores players={session.players} />
+                        </div>
+                    </div>
+                );
+            case "gameOver":
+                var gameOver = true;
+                return (
+                    <div>
+                        <div className="small-header">Scoreboard</div>
+                        <div className="scoreBoard">
+                            <DisplayScores gameOver={gameOver} players={session.players} />
                         </div>
                     </div>
                 );
@@ -530,9 +542,11 @@ var StartRevealing = React.createClass({
 
 var DisplayScores = React.createClass({
     componentDidMount: function() {
-        setTimeout(function() {
-            socket.emit('done showing scoreboard');
-        }, 4000);
+        if(!this.props.gameOver) {
+            setTimeout(function() {
+                socket.emit('done showing scoreboard');
+            }, 3000);
+        }
     },
 
     render: function() {
