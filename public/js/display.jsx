@@ -1,4 +1,10 @@
+var disabledSound = false;
+
 function playSound(file) {
+    if(disabledSound) {
+        return;
+    }
+
     var audio = new Audio(file);
 
     audio.autoplay = true;
@@ -11,6 +17,10 @@ function playSound(file) {
 
 var backgroundAudio;
 function playBackground() {
+    if(disabledSound) {
+        return;
+    }
+
     backgroundAudio = new Audio("/assets/audio/other/answerselection_buildup.mp3");
     backgroundAudio.autoplay = true;
     backgroundAudio.volume = 0.6;
@@ -29,11 +39,19 @@ function playBackground() {
 }
 
 function stopBackground() {
+    if(disabledSound) {
+        return;
+    }
+
     backgroundAudio.pause();
     backgroundAudio.currentTime = 0;
 }
 
 function playSimpleNoise(file) {
+    if(disabledSound) {
+        return;
+    }
+
     var anb = new Audio('/assets/audio/other/'+file);
     anb.autoplay = true;
     anb.volume = 0.3;
@@ -43,6 +61,54 @@ function playSimpleNoise(file) {
         anb.play();
     }, true);
 }
+
+var lobbyAudio;
+function playLobby() {
+    if(disabledSound) {
+        return;
+    }
+
+    lobbyAudio = new Audio("/assets/audio/other/maintheme.mp3");
+    lobbyAudio.autoplay = true;
+    lobbyAudio.loop = true;
+    lobbyAudio.volume = 0.6;
+    $.get();
+
+    lobbyAudio.addEventListener("load", function() {
+        lobbyAudio.play();
+    }, true);
+}
+
+function stopLobby() {
+    if(disabledSound) {
+        return;
+    }
+
+    lobbyAudio.pause();
+    lobbyAudio.currentTime = 0;
+}
+
+$('.toggleSound').on('click', 'span', function() {
+    $this = $(this);
+    if($this.hasClass('glyphicon-volume-up')) {
+        $this.removeClass('glyphicon-volume-up').addClass('glyphicon-volume-off');
+        disabledSound = true;
+
+        try {
+            backgroundAudio.pause();
+            backgroundAudio.currentTime = 0;
+        } catch(err) {}
+
+        try {
+            lobbyAudio.pause();
+            lobbyAudio.currentTime = 0;
+        } catch(err) {}
+
+    } else {
+        $this.removeClass('glyphicon-volume-off').addClass('glyphicon-volume-up');
+        disabledSound = false;
+    }
+});
 
 var Display = React.createClass({
 
@@ -112,6 +178,7 @@ var Display = React.createClass({
                     </div>
                 );
             case "roundIntro":
+                stopLobby();
                 this.tickToLying();
                 var round = session.rounds[session.round];
                 return (
@@ -217,6 +284,7 @@ var Display = React.createClass({
                     </div>
                 );
             default:
+                playLobby();
                 return (
                     <div>
                         <div className="small-header">Creating Room</div>
@@ -536,6 +604,8 @@ var StartRevealing = React.createClass({
                         </div>
                     );
                 });
+            } else {
+                playSimpleNoise('sadtrombone.wav');
             }
 
             return (

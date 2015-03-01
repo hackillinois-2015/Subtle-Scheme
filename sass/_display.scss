@@ -1,4 +1,15 @@
 .display-page {
+    .toggleSound {
+        span {
+            font-size: 2em;
+            margin-top: -30px;
+            margin-bottom: 10px;
+            text-align: right;
+            cursor: pointer;
+            display: block;
+        }
+    }
+
     h1 {
         font-weight: 600;
         font-size: 5em;
