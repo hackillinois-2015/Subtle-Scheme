@@ -43,8 +43,10 @@ function stopBackground() {
         return;
     }
 
-    backgroundAudio.pause();
-    backgroundAudio.currentTime = 0;
+    try {
+        backgroundAudio.pause();
+        backgroundAudio.currentTime = 0;
+    } catch(err) {}
 }
 
 function playSimpleNoise(file) {
@@ -84,8 +86,10 @@ function stopLobby() {
         return;
     }
 
-    lobbyAudio.pause();
-    lobbyAudio.currentTime = 0;
+    try {
+        lobbyAudio.pause();
+        lobbyAudio.currentTime = 0;
+    } catch(err) {}
 }
 
 $('.toggleSound').on('click', 'span', function() {
@@ -166,7 +170,7 @@ var Display = React.createClass({
                         <div className="small-header">Waiting for players ({playerCount}/8)...</div>
                         <div className="joinNotice">
                             <div className="title">
-                                The room code is : <div className="gamecode">{session.gameCode}</div>
+                                The game code is : <div className="gamecode">{session.gameCode}</div>
                             </div>
 
                             <div className="content">
@@ -183,7 +187,7 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div className="questionTime">
-                        <h3 className="title text-center">{round.name}</h3>
+                        <h3 className="title text-center">{round.name} ({session.gameCode})</h3>
                         <div className="text-center to-fool">{round.foolReward} for everyone you fool</div>
                         <div className="text-center for-truth">{round.truthReward} for finding the truth</div>
                     </div>
@@ -213,7 +217,7 @@ var Display = React.createClass({
 
                 return (
                     <div>
-                        <div className="small-header">{round.name}</div>
+                        <div className="small-header">{round.name} ({session.gameCode})</div>
                         <div className="lyingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
                             <WaitingPlayerLies players={session.players} />
@@ -239,7 +243,7 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div>
-                        <div className="small-header">{round.name}</div>
+                        <div className="small-header">{round.name} ({session.gameCode})</div>
                         <div className="choosingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
                             <WaitingPlayerChoosing players={session.players} currentQuestion={session.currentQuestion} />
@@ -253,7 +257,7 @@ var Display = React.createClass({
                 var round = session.rounds[session.round];
                 return (
                     <div>
-                        <div className="small-header">{round.name}</div>
+                        <div className="small-header">{round.name} ({session.gameCode})</div>
                         <div className="revealingTime">
                             <h3 className="title">{session.currentQuestion.prompt}</h3>
                             <StartRevealing data={session} />
@@ -263,7 +267,7 @@ var Display = React.createClass({
             case "scoreboard":
                 return (
                     <div>
-                        <div className="small-header">Scoreboard</div>
+                        <div className="small-header">Scoreboard ({session.gameCode})</div>
                         <div className="scoreBoard">
                             <DisplayScores players={session.players} />
                         </div>
@@ -273,7 +277,7 @@ var Display = React.createClass({
                 var gameOver = true;
                 return (
                     <div>
-                        <div className="small-header">Scoreboard</div>
+                        <div className="small-header">Scoreboard ({session.gameCode})</div>
                         <div className="scoreBoard">
                             <DisplayScores gameOver={gameOver} players={session.players} />
                         </div>
