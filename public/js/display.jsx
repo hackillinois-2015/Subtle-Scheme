@@ -1,5 +1,3 @@
-var socket = io.connect('http://localhost');
-
 var Display = React.createClass({
 
     createRoom: function(data) {
@@ -93,10 +91,25 @@ var Display = React.createClass({
                         </div>
                 */
             case "choosing":
+                var round = session.rounds[session.round];
                 return (
                     <div>
                         <div className="small-header">{round.name}</div>
-                        <WaitingPlayerChoosing players={session.players} />
+                        <div className="choosingTime">
+                            <h3 className="title">{session.currentQuestion.prompt}</h3>
+                            <WaitingPlayerChoosing players={session.players} currentQuestion={session.currentQuestion} />
+                        </div>
+                    </div>
+                );
+
+            case "revealing":
+                return (
+                    <div>
+                        <div className="small-header">{round.name}</div>
+                        <div className="choosingTime">
+                            <h3 className="title">{session.currentQuestion.prompt}</h3>
+                            <WaitingPlayerChoosing players={session.players} currentQuestion={session.currentQuestion} />
+                        </div>
                     </div>
                 );
             default:
@@ -243,9 +256,11 @@ var WaitingPlayerLies = React.createClass({
         }
 
         return (
-            <div className="WaitingPlayerLies playerColor">
+            <div>
                 {finishElement}
-                {listPlayers}
+                <div className="WaitingPlayerLies playerColor">
+                    {listPlayers}
+                </div>
             </div>
         );
     }
@@ -259,6 +274,10 @@ var WaitingPlayerChoosing = React.createClass({
     },
 
     render: function() {
+        finishedUsers = 0;
+        var players = this.props.players;
+        var choices = [];
+
         listPlayers = players.map(function(player) {
             var active = "";
 
@@ -267,12 +286,22 @@ var WaitingPlayerChoosing = React.createClass({
                 finishedUsers++;
             }
 
+            choices.push(
+                <div className="choiceItems">{player.lie}</div>
+            );
+
             return (
                 <div className={"" + active}>
                     <div className="playerLobbyItem"></div>
                 </div>
             );
         });
+
+        choices.push(
+            <div className="choiceItems">{this.props.currentQuestion.answer}</div>
+        );
+
+        choices = shuffle(choices);
 
         var finishElement = [];
 
@@ -285,9 +314,14 @@ var WaitingPlayerChoosing = React.createClass({
         }
 
         return (
-            <div className="WaitingPlayerChoosing playerColor">
+            <div>
+                <div className="choiceList">
+                    {choices}
+                </div>
                 {finishElement}
-                {listPlayers}
+                <div className="WaitingPlayerChoosing playerColor">
+                    {listPlayers}
+                </div>
             </div>
         );
     }

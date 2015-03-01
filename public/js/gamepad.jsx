@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost');
+var whoami;
 
 var Gamepad = React.createClass({
 
@@ -13,6 +13,8 @@ var Gamepad = React.createClass({
         };
 
         console.log('sendTo', sendTo);
+
+        whoami = username;
 
         socket.emit('gamepad join', JSON.stringify(sendTo));
     },
@@ -97,7 +99,13 @@ var Gamepad = React.createClass({
                 return (
                     <div className="choosingTime">
                         <div className="title">{question.prompt}</div>
-                        <ChoosingForm sendChoosing={this.sendInChoosing} players={session.players} />
+                        <ChoosingForm currentQuestion={question} sendChoosing={this.sendInChoosing} players={session.players} />
+                    </div>
+                );
+            case "revealing":
+                return (
+                    <div className="revealingTime">
+                        Answers and Lies are being revealed in the main screen.
                     </div>
                 );
             default:
@@ -189,17 +197,45 @@ var LyingForm = React.createClass({
 });
 
 var ChoosingForm = React.createClass({
+    buttonHandler: function(answer) {
+        console.log(answer);
+        socket.emit('submit choice', answer);
+    },
+
+    render: function() {
+        var choices = [];
+        var currentQuestion = this.props.currentQuestion;
+
+        this.props.players.map(function(player) {
+            if(player.username != whoami) {
+                choices.push(
+                    <ChoosingButton onButtonChosen={this.buttonHandler} answer={player.lie} />
+                );
+            }
+        })
+
+        choices.push(
+            <ChoosingButton onButtonChosen={this.buttonHandler} answer={currentQuestion.answer} />
+        );
+
+        choices = shuffle(choices);
+
+        return (
+            <div className="choiceList">
+                {choices}
+            </div>
+        );
+    }
+});
+
+var ChoosingButton = React.createClass({
+    buttonHandle: function() {
+        this.props.onButtonChosen(this.props.answer);
+    },
+
     render: function() {
         return (
-            <form onSubmit={this.formHandle}>
-                {alertElement}
-                <div className="form-group">
-                    <input type="text" className="form-control" ref="lieText" placeholder="Lie!" />
-                </div>
-                <div className="form-group">
-                    <button type="submit" className="btn">Enter Lie</button>
-                </div>
-            </form>
+            <button onClick={this.buttonHandle} className="btn choiceItems">{this.props.answer}</button>
         );
     }
 });
