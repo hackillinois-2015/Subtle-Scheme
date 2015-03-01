@@ -1,9 +1,69 @@
 .gamepad-page {
+    h1 {
+        padding: 20px 0 0;
+        font-weight: 600;
+        font-size: 3em;
+        color: $blue;
+    }
+
+    .small-header{
+        font-weight: 600;
+        font-size: 2em;
+        color: #424242;
+        padding: 15px 0;
+    }
+
+    .form-control {
+        border-radius: 0;
+        font-size: 1.2em;
+        padding: 9px 15px;
+        height: auto;
+    }
+
+    label {
+        font-weight: 900;
+        padding: 3px 0;
+        font-size: 1.1em;
+        cursor: pointer;
+    }
+
     .btn {
-        color: black;
+        &.choiceItems {
+            background: #212121;
+            color: white;
+        }
+
+        font-weight: 600;
+        font-size: 1.3em;
+        text-align: center;
+        display: block;
+        width: 100%;
+        padding: 9px 0;
+        border-radius: 0;
+        margin: auto;
+        color: white;
+        background: $lightblue;
     }
 
     .makeUppercase {
         text-transform: uppercase;
+    }
+
+    .questionTime, .choosingTime {
+        .title {
+            font-weight: 600;
+            font-size: 1.7em;
+            line-height: 170%;
+            color: #424242;
+            padding: 15px 0;
+        }
+    }
+
+    .notice {
+        font-weight: 600;
+        font-size: 1.7em;
+        line-height: 170%;
+        color: #4CAF50;
+        padding: 15px 0;
     }
 }

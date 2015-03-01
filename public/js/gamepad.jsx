@@ -80,10 +80,10 @@ var Gamepad = React.createClass({
                     </div>
                 );
             case "roundIntro":
-                var question = session.questionSets[session.question];
+                var round = session.rounds[session.round];
                 return (
                     <div className="questionTime">
-                        <div className="title">{question.name}</div>
+                        <div className="title">{round.name}</div>
                     </div>
                 );
             case "lying":
@@ -106,7 +106,7 @@ var Gamepad = React.createClass({
             case "scoreboard":
             case "gameOver":
                 return (
-                    <div className="revealingTime">
+                    <div className="notice">
                         Answers and Lies are being revealed in the main screen.
                     </div>
                 );
@@ -116,10 +116,12 @@ var Gamepad = React.createClass({
                         <div className="small-header">Join Room</div>
                         <form onSubmit={this.formHandle}>
                             <div className="form-group">
-                                <input type="text" className="form-control" ref="username" placeholder="username" />
+                                <label htmlFor="username">Username</label>
+                                <input type="text" className="form-control" id="username" ref="username" placeholder="username" />
                             </div>
                             <div className="form-group">
-                                <input type="text" className="form-control makeUppercase" ref="gameCode" placeholder="gameCode" maxLength="4" size="4" keyup="javascript:this.value=this.value.toUpperCase();" />
+                                <label htmlFor="gameCode">Game Code</label>
+                                <input type="text" className="form-control makeUppercase" id="gameCode" ref="gameCode" placeholder="gameCode" maxLength="4" size="4" keyup="javascript:this.value=this.value.toUpperCase();" />
                             </div>
                             <div className="form-group">
                                 <button type="submit" className="btn">Enter</button>
@@ -179,7 +181,7 @@ var LyingForm = React.createClass({
     render: function() {
         if(this.state.sent) {
             return (
-                <div>Lie has been submitted</div>
+                <div className="notice">Lie has been submitted</div>
             );
         }
 
@@ -219,7 +221,7 @@ var ChoosingForm = React.createClass({
         if(this.state.remove) {
             return (
                 <div className="choiceList">
-                    <div className="choiceItems">You have successfully chosen an answer!</div>
+                    <div className="notice">You have successfully chosen an answer!</div>
                 </div>
             );
         }
