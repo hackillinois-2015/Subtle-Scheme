@@ -162,6 +162,8 @@ var Display = React.createClass({
     render: function() {
         var session = this.state.session;
 
+        console.log(session);
+
         switch(session.phase) {
             case "joining":
                 var playerCount = session.players.length;
@@ -280,6 +282,11 @@ var Display = React.createClass({
                 );
             case "gameOver":
                 var gameOver = true;
+                var play = [];
+                if(session.canPlayAgain) {
+                    play.push(<small><a href="#" onClick={this.playAgain}>Play Again?</a></small>);
+                }
+
                 return (
                     <div>
                         <div className="showGameCode">Game Code: <span>{session.gameCode}</span></div>
@@ -289,7 +296,7 @@ var Display = React.createClass({
                         </div>
                         <h3 className="title text-center">
                             Game Over!<br />
-                            <small><a href="#" onClick={this.playAgain} >Play Again?</a></small>
+                            {play}
                         </h3>
                     </div>
                 );
@@ -603,6 +610,13 @@ var StartRevealing = React.createClass({
             }, 3000)
 
             if(rightPlayers.length !== 0) {
+                if(rightPlayers.length == list.length - 1) {
+                    var sounds = [
+                        'horns.mp3',
+                        'allright.wav'
+                    ];
+                    playSimpleNoise(sounds[Math.floor(Math.random() * 2)])
+                }
                 rightPlayers.map(function(data) {
                     var styles = {
                         transform: 'rotate('+(Math.floor((Math.random() * 14) - 7))+'deg)'
